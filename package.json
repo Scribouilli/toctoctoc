@@ -1,0 +1,20 @@
+{
+  "name": "file-moi-les-clefs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daktary-team/file-moi-les-clefs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/daktary-team/file-moi-les-clefs/issues"
+  },
+  "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme"
+}
