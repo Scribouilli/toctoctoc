@@ -8,7 +8,7 @@ const server = http.createServer(function(request, response) {
           <meta name="referrer" content="same-origin">
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
           
-          <title> </title>
+          <title></title>
           
           <meta name="description" content=" ">
           <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@ const server = http.createServer(function(request, response) {
           <script crossorigin="anonymous" src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
       </head>
       <body>
-        <a href=https://github.com/login/oauth/authorize?client_id=2b4ed9ba835b05f83e2d>Login with Github</button>
+        <a href=https://github.com/login/oauth/authorize?client_id=2b4ed9ba835b05f83e2d&scope=public_repo>Login with Github</button>
       </body>
   </html>
   `)
