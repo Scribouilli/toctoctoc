@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/daktary-team/file-moi-les-clefs/issues"
   },
-  "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme"
+  "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme",
+  "dependencies": {
+    "got": "^8.3.1"
+  }
 }
