@@ -15,9 +15,9 @@ const server = http.createServer(function(request, response) {
     got.post(urlGhOAuth, { json: true }).then(ghResponse => {
       const access_token = ghResponse.body.access_token
 
-      response.end('toto')
-    })
-                             
+      got(`https://api.github.com/user?access_token=${access_token}`, {json: true})
+      .then(user => { response.end(user.login) })
+    })                      
 
   } else {
     response.end(`<!doctype html>
