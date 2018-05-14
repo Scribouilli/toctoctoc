@@ -16,7 +16,8 @@ const server = http.createServer(function(request, response) {
       const access_token = ghResponse.body.access_token
 
       got(`https://api.github.com/user?access_token=${access_token}`, {json: true})
-      .then(user => { response.end(user.login) })
+      .then(user => { response.end(`user_login: ${user.login}`) })
+      .catch(err => console.error('api error', err))
     })                      
 
   } else {
@@ -42,7 +43,12 @@ const server = http.createServer(function(request, response) {
     </html>
     `)
   }
+  
 })
 
-server.listen(process.env.PORT || 5000)
-console.log("Server is listening")
+server.listen(process.env.PORT || 5000, () => {
+  console.log("Server is listening")
+})
+
+process.on('uncaughtException', e => console.error('uncaughtException', e))
+process.on('unhandledRejection', e => console.error('unhandledRejection', e))
