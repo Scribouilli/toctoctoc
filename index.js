@@ -20,6 +20,7 @@ const server = http.createServer(function(request, response) {
         const access_token = ghResponse.body.access_token
 
         response.writeHead(303, {'Location': `/receive-token?access_token=${access_token}`})
+        response.end()
       })
       break
     case '/receive-token': 
