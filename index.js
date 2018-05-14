@@ -25,8 +25,8 @@ const server = http.createServer(function(request, response) {
       break
     case '/receive-token': 
       response.writeHead(200, {'Content-Type': 'text/html'})
-      response.pipe(createReadStream('./example_access_token.html'))
-      response.end()
+      response.pipe(createReadStream('./example_access_token.html')).on('end', () => response.end())
+      
       
       break
 
