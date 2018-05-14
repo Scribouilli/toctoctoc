@@ -20,7 +20,7 @@ app.get('/gh-callback', (req, res) => {
 })
 
 app.get('/receive-token', (req, res) => {
-  res.sendFile('./example_access_token.html')
+  res.sendFile(path.resolve(__dirname, './example_access_token.html'))
 })
 
 app.get('/\*' , (req, res) => {
