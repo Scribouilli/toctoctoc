@@ -16,7 +16,7 @@ const server = http.createServer(function(request, response) {
       const access_token = ghResponse.body.access_token
 
       got(`https://api.github.com/user?access_token=${access_token}`, {json: true})
-      .then(user => { response.end(`<pre>user: ${JSON.stringify(user, null, 3)}</pre>`) })
+      .then(resp => { response.end(`<pre>user: ${JSON.stringify(resp.body, null, 3)}</pre>`) })
       .catch(err => console.error('api error', err))
     })                      
 
