@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme",
   "dependencies": {
+    "express": "^4.16.3",
     "got": "^8.3.1"
   }
 }
