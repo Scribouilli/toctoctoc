@@ -18,12 +18,11 @@
         <h1>Receiving access token</h1>
         <script>
             // get the access token
-
-            //got(`https://api.github.com/user?access_token=${access_token}`, {json: true})
-            //.then(resp => { response.end(`<pre>user: ${JSON.stringify(resp.body, null, 3)}</pre>`) })
-            //.catch(err => console.error('api error', err))
-
-            console.log(location.href)
+            const access_token = (new URL(document.location)).searchParams.get('access_token')
+            fetch(`https://api.github.com/user?access_token=${access_token}`)
+                .then(response => response.json())
+                .then(user => console.log('user', user))
+                .catch(err => console.error('api error', err))
         </script>
     </body>
 </html>
