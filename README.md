@@ -2,6 +2,11 @@
 
 - Create a [Github Oauth app](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
 
+## URLs
+
+- `/gh-callback`: hardcoded route for github to redirect to as redirect url
+- `/receive-token`: example web page that receives the github access token
+- any other page: shows a link to "login with github"
 
 ## Deploy to heroku
 
