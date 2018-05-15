@@ -21,6 +21,11 @@ app.get('/gh-callback', (req, res) => {
   })
 })
 
+app.get('/gh-callback/destination/:destination', (req, res) => {
+  console.log('req.params.destination', req.params.destination)
+  console.log('req.query.code', req.query.code)
+})
+
 app.get('/receive-token', (req, res) => {
   res.sendFile(path.resolve(__dirname, './example_access_token.html'))
 })
@@ -43,7 +48,7 @@ app.get('/\*' , (req, res) => {
             <script crossorigin="anonymous" src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
         </head>
         <body>
-          <a href=https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo>Login with Github</button>
+          <a href=https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo&=&redirect_url=https://file-moi-les-clefs.herokuapp.com/gh-callback/destination/cdp>Login with Github</button>
         </body>
     </html>
   `)
