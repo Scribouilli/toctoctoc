@@ -1,13 +1,15 @@
 const http = require('http')
 const path = require('path')
 const {parse, format} = require('url')
-const {createReadStream} = require('fs')
+const {createReadStream, readFileSync} = require('fs')
 
 const app = require('express')()
 const got = require('got')
 
 const client_id = process.env.GITHUB_ID
 const client_secret = process.env.GITHUB_SECRET
+
+const whitelist = new Set(readFileSync('./whitelist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim()))
 
 app.get('/gh-callback', (req, res) => {
   const {code, destination='/receive-token'} = req.query
@@ -18,9 +20,14 @@ app.get('/gh-callback', (req, res) => {
   got.post(urlGhOAuth, { json: true }).then(ghResponse => {
     const access_token = ghResponse.body.access_token
     const redirectUrl = parse(destination, true)
+    
     redirectUrl.query.access_token = access_token
 
-    res.redirect(302, format(redirectUrl))
+    if (whitelist.has(redirectUrl.hostname)) {
+      res.redirect(302, format(redirectUrl))
+    } else {
+      res.send(403, `<h1>403 Error</h1><p>Vous avez demandé : ${destination}, et ${redirectUrl.hostname} n'est pas présent dans notre <a href="https://github.com/daktary-team/file-moi-les-clefs/blob/master/whitelist.csv">liste d'invité</a>.</p>`)
+    }
   })
 })
 
