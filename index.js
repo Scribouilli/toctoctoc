@@ -48,7 +48,7 @@ app.get('/\*' , (req, res) => {
             <script crossorigin="anonymous" src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
         </head>
         <body>
-          <a href="https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo&redirect_uri=https://file-moi-les-clefs.herokuapp.com/gh-callback?destination=cdp">Login with Github</button>
+          <a href="https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo">Login with Github</button>
         </body>
     </html>
   `)
