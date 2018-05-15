@@ -10,6 +10,9 @@ const client_id = process.env.GITHUB_ID
 const client_secret = process.env.GITHUB_SECRET
 
 app.get('/gh-callback', (req, res) => {
+  console.log('req.query.destination', req.query.destination)
+  console.log('req.query.code', req.query.code)
+
   const code = req.query.code
   const urlGhOAuth =
     `https://github.com/login/oauth/access_token?code=${code}&client_id=${client_id}&client_secret=${client_secret}`
@@ -48,7 +51,7 @@ app.get('/\*' , (req, res) => {
             <script crossorigin="anonymous" src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
         </head>
         <body>
-          <a href="https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo&redirect_uri=https://file-moi-les-clefs.herokuapp.com/gh-callback/destination/cdp">Login with Github</button>
+          <a href="https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo&redirect_uri=https://file-moi-les-clefs.herokuapp.com/gh-callback?destination=cdp">Login with Github</button>
         </body>
     </html>
   `)
