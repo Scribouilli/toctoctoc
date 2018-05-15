@@ -10,23 +10,20 @@ const client_id = process.env.GITHUB_ID
 const client_secret = process.env.GITHUB_SECRET
 
 app.get('/gh-callback', (req, res) => {
-  console.log('req.query.destination', req.query.destination)
-  console.log('req.query.code', req.query.code)
-
-  const code = req.query.code
+  const {code, destination} = req.query
   const urlGhOAuth =
     `https://github.com/login/oauth/access_token?code=${code}&client_id=${client_id}&client_secret=${client_secret}`
 
   got.post(urlGhOAuth, { json: true }).then(ghResponse => {
     const access_token = ghResponse.body.access_token
-
-    res.redirect(302, `/receive-token?access_token=${access_token}`)
+    // let dest = destination ? destination : '/receive-token'
+  
+    if (destination) {
+      res.redirect(302, `${destination}?access_token=${access_token}`)
+    } else {
+      res.redirect(302, `?access_token=${access_token}`)
+    }
   })
-})
-
-app.get('/gh-callback/destination/:destination', (req, res) => {
-  console.log('req.params.destination', req.params.destination)
-  console.log('req.query.code', req.query.code)
 })
 
 app.get('/receive-token', (req, res) => {
