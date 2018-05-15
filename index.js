@@ -20,13 +20,14 @@ app.get('/gh-callback', (req, res) => {
   got.post(urlGhOAuth, { json: true }).then(ghResponse => {
     const access_token = ghResponse.body.access_token
     const redirectUrl = parse(destination, true)
-    
+    const hostname = redirectUrl.hostname // hostname is null when destination is a relative url
+
     redirectUrl.query.access_token = access_token
 
-    if (whitelist.has(redirectUrl.hostname)) {
+    if (!hostname || whitelist.has(hostname)) {
       res.redirect(302, format(redirectUrl))
     } else {
-      res.send(403, `<h1>403 Error</h1><p>Vous avez demandé : ${destination}, et ${redirectUrl.hostname} n'est pas présent dans notre <a href="https://github.com/daktary-team/file-moi-les-clefs/blob/master/whitelist.csv">liste d'invité</a>.</p>`)
+      res.send(403, `<h1>403 Error</h1><p>Vous avez demandé : ${destination}, et ${hostname} n'est pas présent dans notre <a href="https://github.com/daktary-team/file-moi-les-clefs/blob/master/whitelist.csv">liste d'invité</a>.</p>`)
     }
   })
 })
