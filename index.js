@@ -1,6 +1,6 @@
 const http = require('http')
 const path = require('path')
-const {parse} = require('url')
+const {parse, format} = require('url')
 const {createReadStream} = require('fs')
 
 const app = require('express')()
@@ -10,19 +10,17 @@ const client_id = process.env.GITHUB_ID
 const client_secret = process.env.GITHUB_SECRET
 
 app.get('/gh-callback', (req, res) => {
-  const {code, destination} = req.query
+  const {code, destination='/receive-token'} = req.query
+
   const urlGhOAuth =
     `https://github.com/login/oauth/access_token?code=${code}&client_id=${client_id}&client_secret=${client_secret}`
 
   got.post(urlGhOAuth, { json: true }).then(ghResponse => {
     const access_token = ghResponse.body.access_token
-    // let dest = destination ? destination : '/receive-token'
-  
-    if (destination) {
-      res.redirect(302, `${destination}?access_token=${access_token}`)
-    } else {
-      res.redirect(302, `?access_token=${access_token}`)
-    }
+    const redirectUrl = parse(destination, true)
+    redirectUrl.query.access_token = access_token
+
+    res.redirect(302, format(redirectUrl))
   })
 })
 
