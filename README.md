@@ -31,18 +31,23 @@ The only thing this server has to protect is the credentials received from githu
 
 Aside from adhering to POLA practices, this server has very little to do, so little to protect and it's good this way\
 It does not keep trace of the token after having sent them to their destination. 
-One risk is a man-in-the-middle attack, but **HTTPS takes care of this easily**
+One risk is a man-in-the-middle attack, but **well-configured HTTPS takes care of this easily**
 
-The only remaining risk probably comes from a complete take-over of the server via a remote-code execution (RCE). This could happen in the following ways:
+The only remaining risk probably comes from a complete take-over of the server via a remote-code execution (RCE) or complete system take-over. This could happen in the following ways:
+- hardware-access attack (backdoor or direct malicious access to hardware)
+- (i haven't studied it, but probably DNS-based attacks)
 - exploitation of a known RCE vulnerability in the operating system (and probably network stack specifically)
 - exploitation of a known RCE vulnerability in a dependency
     - node.js itself
     - in a dependency itself
     - or via a supply-chain attack
 
-another important piece of the security puzzle are the various `useful-service.com` services themselves who need HTTPS and to make sure what's stored in the local storage is secure (so, no or trusted third-party scripts, etc.)
+another important piece of the security puzzle are the various `useful-service.com` services themselves who **need HTTPS and to make sure what's stored in the local storage is secure** (so only highly-trusted third-party scripts, CSP, etc.)
 
 An important note is that the different `useful-service.com` services are isolated from one another
+
+For the most part, the boring aspect of the project (accounting data from very small companies), HTTPS and up-to-date dependencies (OS, node.js and package.json dependencies) should probably keep things safe fairly easily
+
 
 
 
