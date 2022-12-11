@@ -1,17 +1,20 @@
-const http = require('http')
-const path = require('path')
-const {parse, format} = require('url')
-const {createReadStream, readFileSync} = require('fs')
+//@ts-check
 
-const app = require('express')()
-const got = require('got')
+import { resolve } from 'path'
+import { parse, format } from 'url'
+import { readFileSync } from 'fs'
+
+import Fastify from 'fastify'
+import got from 'got'
+
+const server = Fastify()
 
 const client_id = process.env.GITHUB_ID
 const client_secret = process.env.GITHUB_SECRET
 
 const whitelist = new Set(readFileSync('./whitelist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim()))
 
-app.get('/gh-callback', (req, res) => {
+server.get('/gh-callback', (req, res) => {
   const {code, destination='/receive-token'} = req.query
 
   const urlGhOAuth =
@@ -32,11 +35,11 @@ app.get('/gh-callback', (req, res) => {
   })
 })
 
-app.get('/receive-token', (req, res) => {
-  res.sendFile(path.resolve(__dirname, './example_access_token.html'))
+server.get('/receive-token', (req, res) => {
+  res.sendFile(resolve(__dirname, './example_access_token.html'))
 })
 
-app.get('/\*' , (req, res) => {
+server.get('/\*' , (req, res) => {
   res.send(`<!doctype html>
     <html lang=en>
         <head>
@@ -60,9 +63,9 @@ app.get('/\*' , (req, res) => {
   `)
 })
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log("Server is listening")
-})
+server.listen({ port: process.env.PORT || 5000 }, (err, address) => {
+    console.log(`Server is listening on ${address}  `)
+}) 
 
 process.on('uncaughtException', e => console.error('uncaughtException', e))
 process.on('unhandledRejection', e => console.error('unhandledRejection', e))
