@@ -30,7 +30,7 @@ const port = process.env.PORT
 
 const whitelist = new Set(readFileSync('./whitelist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim()))
 
-server.get('/gh-callback', (req, res) => {
+server.get('/github-callback', (req, res) => {
   // @ts-ignore
   const {code, destination} = req.query
 
@@ -54,11 +54,11 @@ server.get('/gh-callback', (req, res) => {
     return;
   }
   
-  const urlGhOAuth =
+  const urlGithubOAuth =
     `https://github.com/login/oauth/access_token?code=${code}&client_id=${client_id}&client_secret=${client_secret}`
 
-  got.post(urlGhOAuth, { json: true }).then(ghResponse => {
-    const access_token = ghResponse.body.access_token
+  got.post(urlGithubOAuth, { json: true }).then(githubResponse => {
+    const access_token = githubResponse.body.access_token
     redirectUrl.searchParams.set(`access_token`, access_token)
     res.redirect(302, redirectUrl.toString())
   })

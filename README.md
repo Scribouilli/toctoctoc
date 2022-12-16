@@ -63,7 +63,7 @@ or put them in a `.env` file
 
 ## URLs
 
-- `/gh-callback`: hardcoded route for github to redirect to as redirect url
+- `/github-callback`: route for github to redirect to as redirect url
 - `/receive-token`: example web page that receives the github access token
 - any other page: shows a link to "login with github"
 
