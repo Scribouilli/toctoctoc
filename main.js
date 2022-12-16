@@ -1,19 +1,37 @@
 //@ts-check
 
 import { resolve } from 'node:path'
-import { readFileSync } from 'node:fs'
+import { readFileSync, createReadStream } from 'node:fs'
 
 import Fastify from 'fastify'
 import got from 'got'
 
 const server = Fastify()
 
-const client_id = process.env.GITHUB_ID
-const client_secret = process.env.GITHUB_SECRET
+if(!process.env.GITHUB_OAUTH_APP_CLIENT_ID){
+  console.error(`Il manque la variable d'environnement "GITHUB_OAUTH_APP_CLIENT_ID"`)
+  process.exit(1);
+}
+if(!process.env.GITHUB_OAUTH_APP_CLIENT_SECRET){
+  console.error(`Il manque la variable d'environnement "GITHUB_OAUTH_APP_CLIENT_SECRET"`)
+  process.exit(1);
+}
+if(!process.env.PORT){
+  console.error(`Il manque la variable d'environnement "PORT"`)
+  process.exit(1);
+}
+
+
+const client_id = process.env.GITHUB_OAUTH_APP_CLIENT_ID
+const client_secret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET
+const port = process.env.PORT
+
+
 
 const whitelist = new Set(readFileSync('./whitelist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim()))
 
 server.get('/gh-callback', (req, res) => {
+  // @ts-ignore
   const {code, destination} = req.query
 
   if(!code){
@@ -47,10 +65,13 @@ server.get('/gh-callback', (req, res) => {
 })
 
 server.get('/receive-token', (req, res) => {
-  res.sendFile(resolve(__dirname, './example_access_token.html'))
+  res.header('Content-Type', 'application/octet-stream')
+  res.send(createReadStream(resolve('./example_access_token.html')))
 })
 
 server.get('/\*' , (req, res) => {
+
+  res.header('Content-Type', 'text/html')
   res.send(`<!doctype html>
     <html lang=en>
         <head>
@@ -75,7 +96,7 @@ server.get('/\*' , (req, res) => {
 })
 
 // @ts-ignore
-server.listen({ port: process.env.PORT || 5000 }, (err, address) => {
+server.listen({ port }, (err, address) => {
     console.log(`Server is listening on ${address}  `)
 }) 
 

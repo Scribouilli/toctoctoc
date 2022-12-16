@@ -49,9 +49,17 @@ An important note is that the different `useful-service.com` services are isolat
 For the most part, the boring aspect of the project (accounting data from very small companies), HTTPS and up-to-date dependencies (OS, node.js and package.json dependencies) should probably keep things safe fairly easily
 
 
-
+## How it works for Github
 
 - Create a [Github Oauth app](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
+
+set environment variables:
+- `GITHUB_OAUTH_APP_CLIENT_ID`: github app oauth client id
+- `GITHUB_OAUTH_APP_CLIENT_SECRET`: github app oauth secret id
+- `PORT`: port this server will listen to
+
+or put them in a `.env` file
+
 
 ## URLs
 
