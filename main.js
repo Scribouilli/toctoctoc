@@ -6,8 +6,6 @@ import { readFileSync, createReadStream } from 'node:fs'
 import Fastify from 'fastify'
 import got from 'got'
 
-const server = Fastify()
-
 if(!process.env.GITHUB_OAUTH_APP_CLIENT_ID){
   console.error(`Il manque la variable d'environnement "GITHUB_OAUTH_APP_CLIENT_ID"`)
   process.exit(1);
@@ -26,9 +24,11 @@ const client_id = process.env.GITHUB_OAUTH_APP_CLIENT_ID
 const client_secret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET
 const port = process.env.PORT
 
+const allowlist = new Set(
+  readFileSync('./allowlist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim())
+)
 
-
-const whitelist = new Set(readFileSync('./whitelist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim()))
+const server = Fastify()
 
 server.get('/github-callback', (req, res) => {
   // @ts-ignore
@@ -48,7 +48,7 @@ server.get('/github-callback', (req, res) => {
   const redirectUrl = new URL(destination)
   const hostname = redirectUrl.hostname 
 
-  if(!hostname || whitelist.has(hostname)){
+  if(!hostname || allowlist.has(hostname)){
     res.status(403)
       .send(`<h1>Erreur 403</h1><p>Vous avez demandé : ${destination}, et ${hostname} n'est pas présent dans notre <a href="https://github.com/daktary-team/file-moi-les-clefs/blob/master/whitelist.csv">liste d'invité</a>.</p>`)
     return;
