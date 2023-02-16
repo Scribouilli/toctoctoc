@@ -51,14 +51,14 @@ For the most part, the boring aspect of the project (accounting data from very s
 
 ## How it works for Github
 
-- Create a [Github Oauth app](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
+1. Create a [Github Oauth app](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
 
-set environment variables:
-- `GITHUB_OAUTH_APP_CLIENT_ID`: github app oauth client id
-- `GITHUB_OAUTH_APP_CLIENT_SECRET`: github app oauth secret id
-- `PORT`: port this server will listen to
+2. Set environment variables:
+    - `GITHUB_OAUTH_APP_CLIENT_ID`: Github app oauth client id
+    - `GITHUB_OAUTH_APP_CLIENT_SECRET`: Github app oauth secret id
+    - `PORT`: Port this server will listen to
 
-or put them in a `.env` file
+    or put them in an `.env` file.
 
 
 ## URLs
