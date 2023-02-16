@@ -93,8 +93,24 @@ git push heroku master
 heroku config -s > .env
 ```
 
-## [Locally (dev)](https://devcenter.heroku.com/articles/heroku-local#run-your-app-locally-using-the-heroku-local-command-line-tool)
+## Manual installation
+
+**Be sure you've created an Oauth app on your Github account and created an .env file accordingly.**
+
+You need to install [Node.js](https://nodejs.org/en/download/) first
+
+1. Clone the repository
+```sh
+git clone git@github.com:lechappeebelle/scribouilli.git
+```
+
+2. Install dependencies
+```sh
+npm install
+```
+
+3. Start the server. It will listen on the chosen port defined in your .env file.
 
 ```sh
-npm start # heroku local
+npm start
 ```
