@@ -58,7 +58,8 @@ server.get('/github-callback', (req, res) => {
     `https://github.com/login/oauth/access_token?code=${code}&client_id=${client_id}&client_secret=${client_secret}`
 
   got.post(urlGithubOAuth, { json: true }).then(githubResponse => {
-    const access_token = new URL(`http://test.hug/?${githubResponse.body}`).searchParams.get('access_token')
+    const access_token = new URLSearchParams(githubResponse.body).get('access_token')
+    
     redirectUrl.searchParams.set(`access_token`, access_token)
     res.redirect(302, redirectUrl.toString())
   })
