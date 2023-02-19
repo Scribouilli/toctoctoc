@@ -23,6 +23,7 @@ if(!process.env.PORT){
 const client_id = process.env.GITHUB_OAUTH_APP_CLIENT_ID
 const client_secret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET
 const port = process.env.PORT
+const host = process.env.HOST
 
 const allowlist = new Set(
   readFileSync('./allowlist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim())
@@ -46,20 +47,20 @@ server.get('/github-callback', (req, res) => {
   }
 
   const redirectUrl = new URL(destination)
-  const hostname = redirectUrl.hostname 
+  const hostname = redirectUrl.hostname
 
   if(!hostname || allowlist.has(hostname)){
     res.status(403)
       .send(`<h1>Erreur 403</h1><p>Vous avez demandé : ${destination}, et ${hostname} n'est pas présent dans notre <a href="https://github.com/daktary-team/file-moi-les-clefs/blob/master/whitelist.csv">liste d'invité</a>.</p>`)
     return;
   }
-  
+
   const urlGithubOAuth =
     `https://github.com/login/oauth/access_token?code=${code}&client_id=${client_id}&client_secret=${client_secret}`
 
   got.post(urlGithubOAuth, { json: true }).then(githubResponse => {
     const access_token = new URLSearchParams(githubResponse.body).get('access_token')
-    
+
     redirectUrl.searchParams.set(`access_token`, access_token)
     res.redirect(302, redirectUrl.toString())
   })
@@ -97,9 +98,9 @@ server.get('/\*' , (req, res) => {
 })
 
 // @ts-ignore
-server.listen({ port }, (err, address) => {
+server.listen({ port, host }, (err, address) => {
     console.log(`Server is listening on ${address}  `)
-}) 
+})
 
 process.on('uncaughtException', e => console.error('uncaughtException', e))
 process.on('unhandledRejection', e => console.error('unhandledRejection', e))

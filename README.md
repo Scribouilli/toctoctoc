@@ -57,6 +57,7 @@ For the most part, the boring aspect of the project (accounting data from very s
     - `GITHUB_OAUTH_APP_CLIENT_ID`: Github app oauth client id
     - `GITHUB_OAUTH_APP_CLIENT_SECRET`: Github app oauth secret id
     - `PORT`: Port this server will listen to
+    - `HOST`: Host this server will listen to
 
     or put them in an `.env` file.
 
@@ -101,7 +102,7 @@ You need to install [Node.js](https://nodejs.org/en/download/) first
 
 1. Clone the repository
 ```sh
-git clone git@github.com:lechappeebelle/scribouilli.git
+git clone git@github.com:Scribouilli/file-moi-les-clefs.git
 ```
 
 2. Install dependencies
@@ -109,7 +110,10 @@ git clone git@github.com:lechappeebelle/scribouilli.git
 npm install
 ```
 
-3. Start the server. It will listen on the chosen port defined in your .env file.
+3. Set config in `.env` file (see above)  
+
+
+4. Start the server. It will listen on the chosen port defined in your .env file.
 
 ```sh
 npm start
