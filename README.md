@@ -1,4 +1,4 @@
-# File-moi les clefs (hand me the keys)
+# toctoctoc
 
 This project is a generic server to connect to github (soon gitlab) via oauth.
 
