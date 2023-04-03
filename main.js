@@ -23,7 +23,7 @@ if(!process.env.PORT){
 const client_id = process.env.GITHUB_OAUTH_APP_CLIENT_ID
 const client_secret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET
 const port = process.env.PORT
-const host = process.env.HOST
+const host = process.env.HOST || 'localhost'
 
 const allowlist = new Set(
   readFileSync('./allowlist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim())
@@ -49,7 +49,7 @@ server.get('/github-callback', (req, res) => {
   const redirectUrl = new URL(destination)
   const hostname = redirectUrl.hostname
 
-  if(!hostname || allowlist.has(hostname)){
+  if(!hostname || !allowlist.has(hostname)){
     res.status(403)
       .send(`<h1>Erreur 403</h1><p>Vous avez demandé : ${destination}, et ${hostname} n'est pas présent dans notre <a href="https://github.com/daktary-team/file-moi-les-clefs/blob/master/whitelist.csv">liste d'invité</a>.</p>`)
     return;
