@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "fastify": "^4.10.2",
-    "got": "^12.5.3"
+    "got": "^12.6.0"
   },
   "engines": {
     "node": ">=18"
