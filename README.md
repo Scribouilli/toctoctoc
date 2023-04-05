@@ -1,4 +1,4 @@
-# toctoctoc
+# Toctoctoc
 
 This project is a generic server to connect to github (soon gitlab) via oauth.
 
@@ -6,9 +6,11 @@ After having logged in with github, this server forward everything useful (secre
 
 The typical workflow goes like this:
 - go to `useful-service.com`
-    - this website contains a "login with github" button leading to `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scope}` (each different `useful-service.com` can customize the `scope` part of this link to ask only for the needed rights)
-- on github.com, the user shares rights with "File-moi les clefs" (we need a better name)
-- the "File-moi les clefs" hands the keys back to `useful-service.com`
+    - this website contains a "login with github" button leading to `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scope}&redirect_uri=${redirect_uri}`
+        - each different `useful-service.com` can customize the `scope` part of this link to ask only for the needed rights
+        - the `redirect_uri` must contain a `destination` parameter which is an absolute url to an allowed domain (usually back to `useful-service.com`)
+- on github.com, the user shares rights with toctoctoc
+- the toctoctoc server hands the keys back to the `redirect_uri`
     - `useful-service.com` probably stores the keys in `localStorage` or equivalent
 - from there, the client-side of `useful-service.com` makes direct calls to `github.com`
 
@@ -57,8 +59,9 @@ For the most part, the boring aspect of the project (accounting data from very s
     - `GITHUB_OAUTH_APP_CLIENT_ID`: Github app oauth client id
     - `GITHUB_OAUTH_APP_CLIENT_SECRET`: Github app oauth secret id
     - `PORT`: Port this server will listen to
+    - `HOST`: Host this server will listen to
 
-    or put them in an `.env` file.
+    or put them in an `.env` file (if you install behind nginx for instance).
 
 
 ## URLs
@@ -67,31 +70,6 @@ For the most part, the boring aspect of the project (accounting data from very s
 - `/receive-token`: example web page that receives the github access token
 - any other page: shows a link to "login with github"
 
-## Deploy to heroku
-
-1. [Create an heroku app](https://devcenter.heroku.com/articles/git#creating-a-heroku-remote)
-
-```sh
-heroku create
-```
-
-2. [Configure](https://devcenter.heroku.com/articles/config-vars) `GITHUB_ID` and `GITHUB_SECRET`:
-```sh
-heroku config:set GITHUB_ID=<github oauth app cliend_id>
-heroku config:set GITHUB_SECRET=<github oauth app cliend_secret>
-```
-
-3. [Push the code to the heroku](https://devcenter.heroku.com/articles/git)
-
-```sh
-git push heroku master 
-```
-
-4. [Save the environment variables](https://devcenter.heroku.com/articles/heroku-local#copy-heroku-config-vars-to-your-local-env-file) so they work locally
-
-```sh
-heroku config -s > .env
-```
 
 ## Manual installation
 
@@ -101,7 +79,7 @@ You need to install [Node.js](https://nodejs.org/en/download/) first
 
 1. Clone the repository
 ```sh
-git clone git@github.com:lechappeebelle/scribouilli.git
+git clone git@github.com:Scribouilli/toctoctoc.git
 ```
 
 2. Install dependencies
@@ -109,7 +87,10 @@ git clone git@github.com:lechappeebelle/scribouilli.git
 npm install
 ```
 
-3. Start the server. It will listen on the chosen port defined in your .env file.
+3. Set config in `.env` file (see above)  
+
+
+4. Start the server. It will listen on the chosen port defined in your .env file.
 
 ```sh
 npm start
