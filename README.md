@@ -1,4 +1,4 @@
-# toctoctoc
+# Toctoctoc
 
 This project is a generic server to connect to github (soon gitlab) via oauth.
 
@@ -6,9 +6,11 @@ After having logged in with github, this server forward everything useful (secre
 
 The typical workflow goes like this:
 - go to `useful-service.com`
-    - this website contains a "login with github" button leading to `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scope}` (each different `useful-service.com` can customize the `scope` part of this link to ask only for the needed rights)
-- on github.com, the user shares rights with "File-moi les clefs" (we need a better name)
-- the "File-moi les clefs" hands the keys back to `useful-service.com`
+    - this website contains a "login with github" button leading to `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=${scope}&redirect_uri=${redirect_uri}`
+        - each different `useful-service.com` can customize the `scope` part of this link to ask only for the needed rights
+        - the `redirect_uri` must contain a `destination` parameter which is an absolute url to an allowed domain (usually back to `useful-service.com`)
+- on github.com, the user shares rights with toctoctoc
+- the toctoctoc server hands the keys back to the `redirect_uri`
     - `useful-service.com` probably stores the keys in `localStorage` or equivalent
 - from there, the client-side of `useful-service.com` makes direct calls to `github.com`
 
@@ -59,7 +61,7 @@ For the most part, the boring aspect of the project (accounting data from very s
     - `PORT`: Port this server will listen to
     - `HOST`: Host this server will listen to
 
-    or put them in an `.env` file.
+    or put them in an `.env` file (if you install behind nginx for instance).
 
 
 ## URLs
@@ -77,7 +79,7 @@ You need to install [Node.js](https://nodejs.org/en/download/) first
 
 1. Clone the repository
 ```sh
-git clone git@github.com:Scribouilli/file-moi-les-clefs.git
+git clone git@github.com:Scribouilli/toctoctoc.git
 ```
 
 2. Install dependencies
