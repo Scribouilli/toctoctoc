@@ -37,6 +37,7 @@ server.get('/github-callback', (req, res) => {
 
   if(!code){
     res.status(400)
+      .header('Content-Type', 'text/html')
       .send(`
         <h1>Erreur</h1>
         <p>le paramètre <code>code<code> est manquant</p>
@@ -46,6 +47,7 @@ server.get('/github-callback', (req, res) => {
   }
   if(!destination){
     res.status(400)
+      .header('Content-Type', 'text/html')
       .send(`
         <h1>Erreur</h1>
         <p>le paramètre <code>destination<code> est manquant.</p>
@@ -59,6 +61,7 @@ server.get('/github-callback', (req, res) => {
 
   if(!hostname){
     res.status(400)
+      .header('Content-Type', 'text/html')
       .send(`
         <h1>Erreur</h1>
         <p>le paramètre <code>destination<code> n'a pas de hostname. (destination : ${destination})</p>
@@ -67,8 +70,9 @@ server.get('/github-callback', (req, res) => {
     return;
   }
 
-  if(!allowlist.has(hostname)){
+  if(hostname !== 'localhost' && !allowlist.has(hostname)){
     res.status(403)
+      .header('Content-Type', 'text/html')
       .send(`
         <h1>Erreur</h1>
         <p>La destination est ${destination}, et son hostname (${hostname}) n'est pas présent dans notre <a href="https://github.com/Scribouilli/toctoctoc/blob/main/allowlist.csv">liste de hostname autorisés</a>.</p>
@@ -90,6 +94,7 @@ server.get('/github-callback', (req, res) => {
 
     if(!access_token){
       res.status(400)
+        .header('Content-Type', 'text/html')
         .send(`
           <h1>Erreur</h1>
           <p>le <code>access_token</code> attendu de la part de Github n'a pas été récupéré</p>
