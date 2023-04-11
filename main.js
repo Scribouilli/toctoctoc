@@ -139,7 +139,7 @@ server.get('/' , (req, res) => {
 
   res.header('Content-Type', 'text/html')
   res.send(htmlTemplate(`
-    <h1>Serveur toctoctoc<h1>
+    <h1>Serveur toctoctoc</h1>
     <p>Le serveur toctoctoc est disponible (<code>client_id: ${client_id}</code>)</p>
     <p>Tu peux créer un bouton "login with github" où le <code>redirect_uri</code> contient un 
       paramètre <code>destination</code> vers l'un des domaines suivants :
