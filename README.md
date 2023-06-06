@@ -31,7 +31,7 @@ We plan on implementing the same for gitlab (both gitlab.com and self-hosted git
 
 The only thing this server has to protect is the credentials received from github (secret token)
 
-Aside from adhering to [POLA](https://en.wikipedia.org/wiki/Principle_of_least_privilege "Principle of least authority") practices, this server has very little to do, so little to protect and it's good this way\
+Aside from adhering to [POLA](# "Principle of least authority") practices, this server has very little to do, so little to protect and it's good this way\
 It does not keep trace of the token after having sent them to their destination. 
 One risk is a man-in-the-middle attack, but **well-configured HTTPS takes care of this easily**
 
