@@ -93,5 +93,5 @@ npm install
 4. Start the server. It will listen on the chosen port defined in your .env file.
 
 ```sh
-npm start
+npm start-dev
 ```
