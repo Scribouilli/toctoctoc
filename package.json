@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "env-cmd node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint -f unix \"**/*.{js}\""
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "fastify": "^4.10.2",
