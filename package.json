@@ -26,10 +26,9 @@
   },
   "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
     "env-cmd": "^10.1.0",
     "eslint": "^8.51.0",
+    "eslint-plugin-jsdoc": "^46.8.2",
     "eslint-plugin-tsdoc": "^0.2.17"
   }
 }
