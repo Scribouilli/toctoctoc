@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "env-cmd node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint -f unix \"**/*.{js}\""
   },
   "dependencies": {
     "fastify": "^4.10.2",
@@ -26,6 +27,10 @@
   },
   "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme",
   "devDependencies": {
-    "env-cmd": "^10.1.0"
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "env-cmd": "^10.1.0",
+    "eslint": "^8.51.0",
+    "eslint-plugin-tsdoc": "^0.2.17"
   }
 }
