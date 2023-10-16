@@ -1,5 +1,7 @@
 import got from 'got'
 
+import { htmlTemplate, allowlist } from './tools.js'
+
 export const onGithubCallback = (client_id, client_secret) => (req, res) => {
   // @ts-ignore
   const {code, destination} = req.query

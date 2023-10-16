@@ -1,9 +1,9 @@
 //@ts-check
 
-import { onGithubCallback } from './github/index.js'
-import { onGitlabCallback } from './gitlab/index.js'
+import { onGithubCallback } from './github.js'
+import { onGitlabCallback } from './gitlab.js'
+import { htmlTemplate, allowlist } from './tools.js'
 
-import { readFileSync } from 'node:fs'
 
 import Fastify from 'fastify'
 
@@ -55,38 +55,6 @@ const gitlabClientSecret = process.env.GITLAB_OAUTH_APP_CLIENT_SECRET
 const port = process.env.PORT
 const host = process.env.HOST || 'localhost'
 
-const allowlist = new Set(
-  readFileSync('./allowlist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim())
-)
-
-/**
- * 
- * @param {TemplateStringsArray | string} content
- * @returns {string}
- */
-function htmlTemplate(content){
-  if(typeof content !== 'string'){
-    content = content[0]
-  }
-
-  return `<!doctype html>
-    <html lang="fr">
-        <head>
-            <meta charset="utf-8">
-            <link rel="icon" href="data:,">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            
-            <title>Serveur toctoctoc</title>
-            
-            <meta name="referrer" content="no-referrer">
-            <style>body{width: 60%; margin: 1rem auto;}</style>
-        </head>
-        <body>
-          ${content}
-        </body>
-    </html>`
-}
-
 const server = Fastify()
 
 server.get('/github-callback', onGithubCallback(githubClientId, githubClientSecret))
@@ -97,7 +65,7 @@ server.get('/' , (req, res) => {
   res.header('Content-Type', 'text/html')
   res.send(htmlTemplate(`
     <h1>Serveur toctoctoc</h1>
-    <p>Le serveur toctoctoc est disponible (<code>client_id: ${client_id}</code>)</p>
+    <p>Le serveur toctoctoc est disponible (<code>client_id: ${githubClientId}</code>)</p>
     <p>Tu peux créer un bouton "login with github" où le <code>redirect_uri</code> contient un
       paramètre <code>destination</code> vers l'un des domaines suivants :
       <ul>
@@ -135,7 +103,7 @@ server.get('/test', (req, res) => {
 
 // @ts-ignore
 server.listen({ port, host }, (err, address) => {
-    console.log(`Server is listening on ${address}  `)
+  console.log(`Server is listening on ${address}  `)
 })
 
 process.on('uncaughtException', e => console.error('uncaughtException', e))
