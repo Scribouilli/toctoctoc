@@ -12,7 +12,7 @@ export const onGitlabCallback = (client_id, client_secret) => (req, res) => {
       .send(htmlTemplate`
         <h1>Erreur</h1>
         <p>le paramètre <code>code<code> est manquant</p>
-        <p>Peut-être que l'API github ne fonctionne plus pareil. Regarder l'API Rest github</p>
+        <p>Peut-être que l'API GitLab ne fonctionne plus pareil. Regarder l'API Rest GitLab</p>
       `)
     return;
   }
@@ -59,8 +59,8 @@ export const onGitlabCallback = (client_id, client_secret) => (req, res) => {
         .header('Content-Type', 'text/html')
         .send(htmlTemplate`
           <h1>Erreur</h1>
-          <p>le <code>access_token</code> attendu de la part de Github n'a pas été récupéré</p>
-          <p>Peut-être que le fonctionnement de l'API github a changé ou que le code ne le trouve pas au bon endroit</p>
+          <p>le <code>access_token</code> attendu de la part de GitLab n'a pas été récupéré</p>
+          <p>Peut-être que le fonctionnement de l'API GitLab a changé ou que le code ne le trouve pas au bon endroit</p>
         `)
       return;
     }
