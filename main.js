@@ -57,10 +57,6 @@ const host = process.env.HOST || 'localhost'
 
 const server = Fastify()
 
-server.get('/github-callback', onGithubCallback(githubClientId, githubClientSecret))
-server.get('/gitlab-callback', onGitlabCallback(gitlabClientId, gitlabClientSecret))
-
-
 server.get('/' , (req, res) => {
   res.header('Content-Type', 'text/html')
   res.send(htmlTemplate(`
@@ -75,6 +71,9 @@ server.get('/' , (req, res) => {
 
   `))
 })
+
+server.get('/github-callback', onGithubCallback(githubClientId, githubClientSecret))
+server.get('/gitlab-callback', onGitlabCallback(gitlabClientId, gitlabClientSecret))
 
 server.get('/test-retour', (req, res) => {
   res.header('Content-Type', 'text/html')

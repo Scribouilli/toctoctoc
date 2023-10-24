@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "env-cmd node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "ts": "tsc --project jsconfig.json"
   },
   "dependencies": {
     "fastify": "^4.10.2",
@@ -26,6 +28,9 @@
   },
   "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme",
   "devDependencies": {
-    "env-cmd": "^10.1.0"
+    "@types/node": "^20.8.6",
+    "env-cmd": "^10.1.0",
+    "husky": "^8.0.3",
+    "typescript": "^5.2.2"
   }
 }
