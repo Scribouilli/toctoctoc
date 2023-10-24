@@ -88,11 +88,11 @@ server.get('/github-callback', (req, res) => {
   if(!hostname){
     res.status(400)
       .header('Content-Type', 'text/html')
-      .send(htmlTemplate`
+      .send(htmlTemplate(`
         <h1>Erreur</h1>
         <p>le paramètre <code>destination<code> n'a pas de hostname. (destination : ${destination})</p>
         <p>Rajouter une origine au paramètre <code>destination<code>
-      `)
+      `))
     return;
   }
 
