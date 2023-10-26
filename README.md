@@ -9,6 +9,13 @@ client-side code communicates directly with the forge without intermediaries.
 This is possible with the implemented forges (GitHub, GitLab) because they have
 CORS headers open on many API endpoints.
 
+- [Workflow example](#workflow-example)
+- [How to install toctoctoc](#how-to-install-toctoctoc)
+- [How to use your toctoctoc server](#how-to-use-your-toctoctoc-server)
+- [Endpoints](#endpoints)
+- [Benefits of this approach](#benefits-of-this-approach)
+- [Security](#security)
+
 ## Workflow example
 
 Let's say you have a client application. You want your users to be able to
@@ -50,12 +57,12 @@ Create an OAuth application for the forge(s) you want to handle with the server:
 
 ### 3 - Install the server
 
-1. Clone the repository
+Clone the repository
 ```sh
 git clone git@github.com:Scribouilli/toctoctoc.git
 ```
 
-2. Install dependencies
+Install dependencies
 ```sh
 npm install
 ```
@@ -69,8 +76,8 @@ service.
 - `GITHUB_OAUTH_APP_CLIENT_SECRET`: GitHub OAuth application client secret.
 - `GITLAB_OAUTH_APP_CLIENT_ID`: GitLab OAuth application id.
 - `GITLAB_OAUTH_APP_CLIENT_SECRET`: GitLab OAuth application secret.
-- `PORT`: Port this server will listen to
-- `HOST`: Host this server will listen to
+- `PORT`: Port this server will listen to. By default, it's `4000`.
+- `HOST`: Host this server will listen to. By default, it's `localhost`.
 
 You can put these environment variable in an `.env` file (if you install behind
 nginx for instance).
