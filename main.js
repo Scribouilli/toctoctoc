@@ -48,11 +48,11 @@ if(!process.env.PORT){
   process.exit(1);
 }
 
-const githubClientId = process.env.GITHUB_OAUTH_APP_CLIENT_ID
-const githubClientSecret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET
-const gitlabClientId = process.env.GITLAB_OAUTH_APP_CLIENT_ID
-const gitlabClientSecret = process.env.GITLAB_OAUTH_APP_CLIENT_SECRET
-const port = process.env.PORT
+const githubClientId = process.env.GITHUB_OAUTH_APP_CLIENT_ID || ""
+const githubClientSecret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET || ""
+const gitlabClientId = process.env.GITLAB_OAUTH_APP_CLIENT_ID || ""
+const gitlabClientSecret = process.env.GITLAB_OAUTH_APP_CLIENT_SECRET || ""
+const port = process.env.PORT || 4000
 const host = process.env.HOST || 'localhost'
 
 const server = Fastify()
