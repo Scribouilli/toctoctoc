@@ -67,7 +67,7 @@ Install dependencies
 npm install
 ```
 
-### Setup the environment variables
+### 4 - Setup the environment variables
 
 You need to fill the the client id and client secret of at least one forge
 service.
@@ -82,7 +82,7 @@ service.
 You can put these environment variable in an `.env` file (if you install behind
 nginx for instance).
 
-### Start the server
+### 5 - Start the server
 
 **You need to setup at least one forge service to use toctoctoc properly. Be
 sure that your OAuth application is setup correctly and your environment
