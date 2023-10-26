@@ -22,7 +22,6 @@ export const onGitlabCallback = (client_id, client_secret) => {
       return;
     }
 
-    // TODO check if we can pass destination?
     const redirectUrl = new URL(destination)
     const hostname = redirectUrl.hostname
 
@@ -57,7 +56,9 @@ export const onGitlabCallback = (client_id, client_secret) => {
     const urlGitlabOAuth =`https://gitlab.com/oauth/token?${parameters}`
 
     got.post(urlGitlabOAuth, { json: true }).then(gitlabResponse => {
-      const access_token = JSON.parse(gitlabResponse.body).access_token
+      const response = JSON.parse(gitlabResponse.body)
+      const access_token = response.access_token
+      const refresh_token = response.refresh_token || ""
 
       if(!access_token){
         res.status(400)
@@ -71,6 +72,8 @@ export const onGitlabCallback = (client_id, client_secret) => {
       }
 
       redirectUrl.searchParams.set(`access_token`, access_token)
+      redirectUrl.searchParams.set(`refresh_token`, refresh_token)
+
       res.redirect(302, redirectUrl.toString())
     }).catch(e => {
       console.error(e)
