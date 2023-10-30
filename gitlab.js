@@ -9,7 +9,7 @@ import { htmlTemplate, allowlist } from './tools.js'
 export const onGitlabCallback = (client_id, client_secret, base_url) => {
   // @ts-ignore
   return (req, res) => {
-    const {code, destination} = req.query
+    const {code, destination, state} = req.query
 
     if(!code){
       res.status(400)
@@ -57,8 +57,7 @@ export const onGitlabCallback = (client_id, client_secret, base_url) => {
 
     got.post(urlGitlabOAuth, { json: true }).then(gitlabResponse => {
       const response = JSON.parse(gitlabResponse.body)
-      const access_token = response.access_token
-      const refresh_token = response.refresh_token || ""
+      const { access_token, refresh_token, expires_in } = response
 
       if(!access_token){
         res.status(400)
@@ -73,6 +72,8 @@ export const onGitlabCallback = (client_id, client_secret, base_url) => {
 
       redirectUrl.searchParams.set(`access_token`, access_token)
       redirectUrl.searchParams.set(`refresh_token`, refresh_token)
+      redirectUrl.searchParams.set(`expires_in`, expires_in)
+      redirectUrl.searchParams.set(`state`, state)
 
       res.redirect(302, redirectUrl.toString())
     }).catch(e => {
