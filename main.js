@@ -43,23 +43,13 @@ if(process.env.GITHUB_OAUTH_APP_CLIENT_ID){
   }
 }
 
-if(!process.env.PORT){
-  console.error(`Il manque la variable d'environnement "PORT"`)
-  process.exit(1);
-}
-
-if(!process.env.SERVER_BASE_URL){
-  console.error(`Il manque la variable d'environnement "SERVER_BASE_URL"`)
-  process.exit(1);
-}
-
 const githubClientId = process.env.GITHUB_OAUTH_APP_CLIENT_ID || ""
 const githubClientSecret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET || ""
 const gitlabClientId = process.env.GITLAB_OAUTH_APP_CLIENT_ID || ""
 const gitlabClientSecret = process.env.GITLAB_OAUTH_APP_CLIENT_SECRET || ""
 const port = process.env.PORT || 4000
 const host = process.env.HOST || 'localhost'
-const serverBaseUrl = process.env.SERVER_BASE_URL || ""
+const serverBaseUrl = process.env.SERVER_BASE_URL || "http://localhost:4000"
 
 const server = Fastify()
 

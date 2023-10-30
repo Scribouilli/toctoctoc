@@ -77,6 +77,8 @@ You need to fill the client id and client secret of at least one forge service.
 - `GITLAB_OAUTH_APP_CLIENT_SECRET`: GitLab OAuth application secret.
 - `PORT`: The port this server will listen to. By default, it's `4000`.
 - `HOST`: The host this server will listen to. By default, it's `localhost`.
+- `SERVER_BASE_URL`: The base URL you use to access your toctoctoc server. By
+    default, it's `http://localhost:4000`.
 
 You can put these environment variables in an `.env` file.
 
@@ -163,16 +165,23 @@ retrieve an `access_token` with your toctoctoc server:
 </a>
 ```
 
+Along with the `access_token`, some other parameters are returned with the
+`destination` URL after the GitLab authentication:
+- `refresh_token`: a token used to ask for a new GitLab OAuth token (check the
+  section below for more information).
+- `expires_in`: the validity of the `access_token` in milliseconds.
+- `state` : the value you provided to maintain state
+  between the request to GitLab and the callback on your client application.
+
 You can check [GitLab's available scopes](https://docs.gitlab.com/ee/integration/oauth_provider.html#view-all-authorized-applications)
 to only ask for the rights you need.
+
+#### Token expiration
 
 GitLab access tokens expire after two hours. On your client application, after
 maximum two hours, you have to generate a new
 `access_token` using the `refresh_token` attribute following the third step of
 [this documentation](https://docs.gitlab.com/ee/api/oauth2.html#authorization-code-flow).
-
-The `refresh_token` is provided with the `destination` URL along with the
-`access_token` after the GitLab authentication.
 
 ## Endpoints
 
