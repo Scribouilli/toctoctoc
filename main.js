@@ -78,31 +78,6 @@ server.get(
   onGitlabCallback(gitlabClientId, gitlabClientSecret, serverBaseUrl),
 )
 
-server.get('/test-retour', (req, res) => {
-  res.header('Content-Type', 'text/html')
-  res.send(htmlTemplate(`
-    <h1>Serveur toctoctoc</h1>
-  `)
-  )
-})
-
-server.get('/test', (req, res) => {
-  res.header('Content-Type', 'text/html')
-  res.send(htmlTemplate(`
-    <h1>Serveur toctoctoc</h1>
-    <p>
-    <a href="https://github.com/login/oauth/authorize?client_id=${githubClientId}&scope=public_repo,user:email&redirect_uri=http://localhost:4000/github-callback?destination=http://localhost:4000/test-retour">GitHub</a>
-    </p>
-    <p>
-
-    <a href="https://gitlab.com/oauth/authorize?client_id=${gitlabClientId}&redirect_uri=http://localhost:4000/gitlab-callback?destination=http://localhost:4000/test-retour&response_type=code&state=0987&scope=read_repository+write_repository+email">
-    GitLab
-    </a>
-    </p>
-  `)
-  )
-})
-
 // @ts-ignore
 server.listen({ port, host }, (err, address) => {
   console.log(`Server is listening on ${address}  `)
