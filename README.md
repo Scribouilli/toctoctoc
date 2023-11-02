@@ -1,12 +1,12 @@
 # Toctoctoc
 
-This project is a generic server to connect to a forge service via OAuth.
-Currently, the implemented forge services are GitHub and GitLab (via `gitlab.com`).
+This project is a generic server to connect to a OAuth identity service.
+Currently, the implemented services are GitHub and GitLab through `gitlab.com`.
 
-After having logged in with the forge, this server forwards everything useful
+After having logged in with the service, this server forwards everything useful
 (secret token, refresh token if necessary) to the client-side. From there, the
-client-side code communicates directly with the forge without intermediaries.
-This is possible with the implemented forges (GitHub, GitLab) because they have
+client-side code communicates directly with the service without intermediaries.
+This is possible with the implemented services (GitHub, GitLab) because they have
 CORS headers open on many API endpoints.
 
 - [Workflow example](#workflow-example)
@@ -47,7 +47,7 @@ You can also set it up for GitLab if you need it.
 
 ### 2 - Create an OAuth application
 
-Create an OAuth application for the forges you want to handle with the server:
+Create an OAuth application for the service you want to handle with the server:
 - A [GitHub OAuth app](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/):
   for the `Authorization callback URL`, use the endpoint provided by your
   toctoctoc server: `[your-toctoctoc-server-URL]/github-callback`.
@@ -69,7 +69,7 @@ npm install
 
 ### 4 - Setup the environment variables
 
-You need to fill the client id and client secret of at least one forge service.
+You need to fill the client id and client secret of at least one service.
 
 - `GITHUB_OAUTH_APP_CLIENT_ID`: GitHub OAuth application client id.
 - `GITHUB_OAUTH_APP_CLIENT_SECRET`: GitHub OAuth application client secret.
@@ -84,7 +84,7 @@ You can put these environment variables in an `.env` file.
 
 ### 5 - Start the server
 
-**You need to setup at least one forge service to use toctoctoc properly. Be
+**You need to setup at least one service to use toctoctoc properly. Be
 sure that your OAuth application is setup correctly and your environment
 variables too.**
 
@@ -98,7 +98,7 @@ npm start
 ## How to use your toctoctoc server
 
 On your client application, you have to authenticate your users through one of
-the forge services (GitHub or GitLab) and configure this authentication to use
+the services (GitHub or GitLab) and configure this authentication to use
 it with your toctoctoc server.
 
 ### With GitHub
@@ -185,7 +185,7 @@ maximum two hours, you have to generate a new
 
 ## Endpoints
 
-This server provides the following endpoints for you to use with your forge
+This server provides the following endpoints for you to use with your
 service OAuth application:
 
 - `/github-callback`: route for GitHub to redirect to as redirect URL.
@@ -205,7 +205,7 @@ We plan on implementing the same for gitlab (both gitlab.com and self-hosted git
 
 ## Security
 
-The only thing this server has to protect are the credentials received from the forge services (for example GitHub's secret token).
+The only thing this server has to protect are the credentials received from the services (for example GitHub's secret token).
 
 Aside from adhering to [POLA](# "Principle of least authority") practices, this server has very little to do, so little to protect and it's good this way.\
 It does not keep trace of the token after having sent it to their destination.
