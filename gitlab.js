@@ -6,7 +6,7 @@ import { htmlTemplate, allowlist } from './tools.js'
  * @param {string} client_id
  * @param {string} client_secret
  */
-export const onGitlabCallback = (client_id, client_secret, base_url) => {
+export const onGitlabCallback = (client_id, client_secret, origin) => {
   // @ts-ignore
   return (req, res) => {
     const {code, destination, state} = req.query
@@ -52,7 +52,7 @@ export const onGitlabCallback = (client_id, client_secret, base_url) => {
       return;
     }
 
-    const parameters = `client_id=${client_id}&client_secret=${client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=${base_url}/gitlab-callback?destination=${destination}`
+    const parameters = `client_id=${client_id}&client_secret=${client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=${origin}/gitlab-callback?destination=${destination}`
     const urlGitlabOAuth =`https://gitlab.com/oauth/token?${parameters}`
 
     got.post(urlGitlabOAuth, { json: true }).then(gitlabResponse => {

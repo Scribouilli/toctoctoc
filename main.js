@@ -43,13 +43,20 @@ if(process.env.GITHUB_OAUTH_APP_CLIENT_ID){
   }
 }
 
+if(!process.env.ORIGIN){
+  console.error(`
+    Il manque la variable d'environnement "ORIGIN".
+  `)
+  process.exit(1);
+}
+
 const githubClientId = process.env.GITHUB_OAUTH_APP_CLIENT_ID || ""
 const githubClientSecret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET || ""
 const gitlabClientId = process.env.GITLAB_OAUTH_APP_CLIENT_ID || ""
 const gitlabClientSecret = process.env.GITLAB_OAUTH_APP_CLIENT_SECRET || ""
+const origin = process.env.ORIGIN
 const port = process.env.PORT || 4000
 const host = process.env.HOST || 'localhost'
-const serverBaseUrl = process.env.SERVER_BASE_URL || "http://localhost:4000"
 
 const server = Fastify()
 
@@ -75,7 +82,7 @@ server.get(
 
 server.get(
   "/gitlab-callback",
-  onGitlabCallback(gitlabClientId, gitlabClientSecret, serverBaseUrl),
+  onGitlabCallback(gitlabClientId, gitlabClientSecret, origin),
 )
 
 // @ts-ignore

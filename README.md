@@ -77,8 +77,10 @@ You need to fill the client id and client secret of at least one service.
 - `GITLAB_OAUTH_APP_CLIENT_SECRET`: GitLab OAuth application secret.
 - `PORT`: The port this server will listen to. By default, it's `4000`.
 - `HOST`: The host this server will listen to. By default, it's `localhost`.
-- `SERVER_BASE_URL`: The base URL you use to access your toctoctoc server. By
-    default, it's `http://localhost:4000`.
+- `ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
+  of your toctoctoc server. It is defined by the protocol, the
+  hostname and the port of the URL you use to access your toctoctoc server. (eg.
+  `http://localhost:4000`)
 
 You can put these environment variables in an `.env` file.
 
