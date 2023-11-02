@@ -9,7 +9,7 @@ import Fastify from 'fastify'
 
 if(
   !process.env.GITHUB_OAUTH_APP_CLIENT_ID &&
-  !process.env.GITLAB_OAUTH_APP_CLIENTID
+  !process.env.GITLAB_OAUTH_APP_CLIENT_ID
 ){
   console.error(`
     Aucune OAuth App n'est configurée pour ce serveur.
