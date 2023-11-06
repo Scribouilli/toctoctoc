@@ -11,7 +11,7 @@
     "ts": "tsc --project jsconfig.json"
   },
   "dependencies": {
-    "fastify": "^4.10.2",
+    "fastify": "^4.24.3",
     "got": "^12.6.0"
   },
   "engines": {
