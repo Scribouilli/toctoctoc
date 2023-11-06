@@ -1,5 +1,5 @@
 {
-  "name": "file-moi-les-clefs",
+  "name": "toctoctoc",
   "version": "1.0.0",
   "license": "CC0-1.0",
   "description": "",
@@ -11,7 +11,7 @@
     "ts": "tsc --project jsconfig.json"
   },
   "dependencies": {
-    "fastify": "^4.10.2",
+    "fastify": "^4.24.3",
     "got": "^12.6.0"
   },
   "engines": {
@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/daktary-team/file-moi-les-clefs.git"
+    "url": "git+https://github.com/Scribouilli/toctoctoc.git"
   },
   "keywords": [],
   "author": "",
   "bugs": {
-    "url": "https://github.com/daktary-team/file-moi-les-clefs/issues"
+    "url": "https://github.com/Scribouilli/toctoctoc/issues"
   },
-  "homepage": "https://github.com/daktary-team/file-moi-les-clefs#readme",
+  "homepage": "https://github.com/Scribouilli/toctoctoc#readme",
   "devDependencies": {
     "@types/node": "^20.8.6",
     "env-cmd": "^10.1.0",
