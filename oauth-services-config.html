@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="referrer" content="no-referrer">
+        
+        <title>Toctoctoc Oauth services configuration</title>
+        
+        <meta name="description" content=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="data:,">
+        
+        <style>
+            body{
+                font-size: 18px;
+                background-color: lightsteelblue;
+            }
+
+            input, textarea{
+                background-color: #DDD;
+            }
+
+            input, textarea, button{
+                margin: 0 1rem;
+            }
+
+            textarea{
+                width: 20rem;
+                height: 20rem;
+            }
+
+            button{
+                font-size: 1.3rem;
+                padding: .7em;
+            }
+
+            main{
+                width: 70%;
+                margin: 0 auto;
+            }
+
+            .key{
+                display: flex;
+                flex-direction: row; 
+                justify-content: center;
+                margin-bottom: 3rem;
+            }
+
+            .key label{
+                display: flex;
+                flex-direction: row; 
+                align-items: center;
+            }
+
+            #renew{
+                width: 7em;
+            }
+
+            .texts{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+
+                height: 30rem;
+            }
+            
+            .texts > div{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .texts .buttons{
+                justify-content: space-evenly;
+                height: 100%;
+            }
+
+        </style>
+
+        <script>
+            "use strict";
+
+            // adapted from https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_1_%E2%80%93_escaping_the_string_before_encoding_it
+            function UTF8ToB64(s) {
+                return btoa(unescape(encodeURIComponent(s)))
+            }
+            function b64ToUTF8(s) {
+                return decodeURIComponent(escape(atob(s)))
+            }
+
+            function typedArrayToString(typedArray){
+                const string = typedArray.reduce((data, byte) => {
+                    return data + String.fromCharCode(byte)
+                }, '')
+
+                return string;
+            }
+
+            const typedArrayToBase64 = typedArray => {
+                return UTF8ToB64(typedArrayToString(typedArray))
+            }
+
+            function base64ToUint8Array(base64String){
+                const str = b64ToUTF8(base64String)
+                return Uint8Array.from(str, char => char.charCodeAt(0))
+            }
+
+            function makeCompleteKeyString(key, initializationVector){
+                console.log(key, initializationVector)
+                const k = typedArrayToBase64(new Uint8Array(key))
+                const iv = typedArrayToBase64(initializationVector) 
+
+                return `${k}-${iv}`
+            }
+
+            async function getCompleteKeyString(string){
+                const [k, iv] = string.split('-')
+
+                const key = await crypto.subtle.importKey('raw', base64ToUint8Array(k), "AES-CBC", true, ["encrypt", "decrypt"])
+                const initializationVector = base64ToUint8Array(iv) 
+
+                return {
+                    k: key,
+                    iv: initializationVector
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                /**
+                 * Key renewal
+                 */
+                const renewButton = document.querySelector('#renew');
+                const completeKeyInput = document.querySelector('#complete-key');
+
+                let initializationVector;
+                let key;
+
+                renewButton.addEventListener('click', async () => {
+                    initializationVector = crypto.getRandomValues(new Uint8Array(16));
+
+                    const k = await crypto.subtle.generateKey(
+                        {
+                            name: "AES-CBC",
+                            length: 256
+                        },
+                        true,
+                        ["encrypt", "decrypt"]
+                    )
+                    
+                    key = k
+
+                    const abKey = await crypto.subtle.exportKey('raw', key)
+                        
+                    const completeKey = makeCompleteKeyString(abKey, initializationVector);
+                    completeKeyInput.value = completeKey;
+                })
+
+                /**
+                 * Encryption
+                 */
+                const encryptButton = document.querySelector('#encrypt');
+                const plainTextInput = document.querySelector('#plaintext');
+                const cipherTextInput = document.querySelector('#ciphertext');
+
+                encryptButton.addEventListener('click', async () => {
+                    const plaintext = (new TextEncoder()).encode(plainTextInput.value);
+
+                    console.log('plaintext', plaintext)
+
+                    const ciphertext = await window.crypto.subtle.encrypt(
+                        {
+                            name: "AES-CBC",
+                            iv: initializationVector
+                        },
+                        key,
+                        plaintext
+                    );
+
+                    console.log('ciphertext', ciphertext)
+
+                    cipherTextInput.value = typedArrayToBase64(new Uint8Array(ciphertext))
+                })
+
+
+                const decryptButton = document.querySelector('#decrypt');
+
+                decryptButton.addEventListener('click', async () => {
+                    const ciphertext = base64ToUint8Array(cipherTextInput.value);
+
+                    console.log('ciphertext', ciphertext)
+
+                    if(!key || !initializationVector){
+                        const {k, iv} = await getCompleteKeyString(completeKeyInput.value)
+                        key = k;
+                        initializationVector = iv
+                    }
+
+                    const plaintext = await window.crypto.subtle.decrypt(
+                        {
+                            name: "AES-CBC",
+                            iv: initializationVector
+                        },
+                        key,
+                        ciphertext
+                    );
+
+                    console.log('plaintext', plaintext)
+
+                    plainTextInput.value = typedArrayToString(new Uint8Array(plaintext))
+                })
+            })
+        </script>
+
+    </head>
+    <body>
+        <main>
+            <h1>Toctoctoc Oauth services configuration</h1>
+            <section class="key">
+                <label>
+                    <code>OAUTH_SERVICES_CONFIG_ENCRYPTION_KEY</code>
+                    <input id="complete-key" type="text" autocomplete="off">
+                </label>
+                <button id="renew">↻ Renew</button>
+            </section>
+
+            <section class="texts">
+                <div>
+                    <h2>JSON configuration content</h2>
+                    <textarea id="plaintext"></textarea>
+                </div>
+                <div class="buttons">
+                    <button id="encrypt">→ Encrypt</button>
+                    <button id="decrypt">← Decrypt</button>
+                </div>
+                <div>
+                    <h2>Encrypted</h2>
+                    <textarea id="ciphertext"></textarea>
+                </div>
+            </section>
+        </main>
+
+    </body>
+</html>

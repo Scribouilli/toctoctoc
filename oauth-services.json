@@ -1,0 +1,13 @@
+{
+    "github": {
+        "client_id": "a",
+        "client_secret": "b"
+    },
+    "gitlab": [
+        {
+            "origin": "https://gitlab.org",
+            "client_id": "a",
+            "client_secret": "b"
+        }
+    ]
+}

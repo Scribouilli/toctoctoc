@@ -1,13 +1,13 @@
 # Toctoctoc
 
-This project is a generic server to connect to a OAuth identity service.
-Currently, the implemented services are GitHub and GitLab through `gitlab.com`.
+This project is a generic server to connect to an OAuth identity service.
+Currently, the implemented services are GitHub and GitLab instances.
 
 After having logged in with the service, this server forwards everything useful
 (secret token, refresh token if necessary) to the client-side. From there, the
 client-side code communicates directly with the service without intermediaries.
 This is possible with the implemented services (GitHub, GitLab) because they have
-CORS headers open on many API endpoints.
+CORS headers open on most API endpoints.
 
 - [Workflow example](#workflow-example)
 - [How to install toctoctoc](#how-to-install-toctoctoc)
@@ -67,7 +67,9 @@ Install dependencies
 npm install
 ```
 
-### 4 - Setup the environment variables
+### 4 - Setup the environment variables and OAuth services configuration
+
+#### Environment variables
 
 You need to fill the client id and client secret of at least one service.
 
@@ -83,6 +85,19 @@ You need to fill the client id and client secret of at least one service.
   `http://localhost:4000`)
 
 You can put these environment variables in an `.env` file.
+
+#### OAuth services configuration
+
+Oauth services are defined in the [oauth-services.json](oauth-services.json) file
+The one provided in the repo is an example file. It **should not** contain the real values
+because they should be kept secret
+
+Instead, you should create a `oauth-services.json.encrypted` file. It's an encrypted 
+`oauth-services.json` file. It can be done easily using [the heper web app](oauth-services-config.html)
+
+
+
+
 
 ### 5 - Start the server
 
