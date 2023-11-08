@@ -8,7 +8,7 @@
     "start": "env-cmd node main.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
-    "ts": "tsc --project jsconfig.json"
+    "ts": "tsc"
   },
   "dependencies": {
     "fastify": "^4.24.3",
