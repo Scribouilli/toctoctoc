@@ -73,10 +73,7 @@ npm install
 
 You need to fill the client id and client secret of at least one service.
 
-- `GITHUB_OAUTH_APP_CLIENT_ID`: GitHub OAuth application client id.
-- `GITHUB_OAUTH_APP_CLIENT_SECRET`: GitHub OAuth application client secret.
-- `GITLAB_OAUTH_APP_CLIENT_ID`: GitLab OAuth application id.
-- `GITLAB_OAUTH_APP_CLIENT_SECRET`: GitLab OAuth application secret.
+- `OAUTH_SERVICES_DECRYPTION_KEY`: a key to decrypt `oauth-services.json.encrypted`
 - `PORT`: The port this server will listen to. By default, it's `4000`.
 - `HOST`: The host this server will listen to. By default, it's `localhost`.
 - `ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)

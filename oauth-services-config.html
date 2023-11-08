@@ -77,32 +77,16 @@
 
         </style>
 
-        <script>
-            "use strict";
+        <script type="module">
+            import {b64ToUTF8, base64ToUint8Array, keyAndIvFromString, typedArrayToString, decryptOauthServicesContent} from './oauthServicesDecrypt.js'
 
             // adapted from https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_1_%E2%80%93_escaping_the_string_before_encoding_it
             function UTF8ToB64(s) {
                 return btoa(unescape(encodeURIComponent(s)))
             }
-            function b64ToUTF8(s) {
-                return decodeURIComponent(escape(atob(s)))
-            }
-
-            function typedArrayToString(typedArray){
-                const string = typedArray.reduce((data, byte) => {
-                    return data + String.fromCharCode(byte)
-                }, '')
-
-                return string;
-            }
 
             const typedArrayToBase64 = typedArray => {
                 return UTF8ToB64(typedArrayToString(typedArray))
-            }
-
-            function base64ToUint8Array(base64String){
-                const str = b64ToUTF8(base64String)
-                return Uint8Array.from(str, char => char.charCodeAt(0))
             }
 
             function makeCompleteKeyString(key, initializationVector){
@@ -111,18 +95,6 @@
                 const iv = typedArrayToBase64(initializationVector) 
 
                 return `${k}-${iv}`
-            }
-
-            async function getCompleteKeyString(string){
-                const [k, iv] = string.split('-')
-
-                const key = await crypto.subtle.importKey('raw', base64ToUint8Array(k), "AES-CBC", true, ["encrypt", "decrypt"])
-                const initializationVector = base64ToUint8Array(iv) 
-
-                return {
-                    k: key,
-                    iv: initializationVector
-                }
             }
 
             document.addEventListener('DOMContentLoaded', () => {
@@ -185,28 +157,16 @@
                 const decryptButton = document.querySelector('#decrypt');
 
                 decryptButton.addEventListener('click', async () => {
-                    const ciphertext = base64ToUint8Array(cipherTextInput.value);
+                    const ciphertext = cipherTextInput.value
+                    const completeKey = completeKeyInput.value
 
-                    console.log('ciphertext', ciphertext)
+                    plainTextInput.value = await decryptOauthServicesContent(ciphertext, completeKey)
 
                     if(!key || !initializationVector){
-                        const {k, iv} = await getCompleteKeyString(completeKeyInput.value)
+                        const {k, iv} = await keyAndIvFromString(completeKey)
                         key = k;
                         initializationVector = iv
                     }
-
-                    const plaintext = await window.crypto.subtle.decrypt(
-                        {
-                            name: "AES-CBC",
-                            iv: initializationVector
-                        },
-                        key,
-                        ciphertext
-                    );
-
-                    console.log('plaintext', plaintext)
-
-                    plainTextInput.value = typedArrayToString(new Uint8Array(plaintext))
                 })
             })
         </script>
@@ -234,6 +194,7 @@
                 </div>
                 <div>
                     <h2>Encrypted</h2>
+                    <p>Base64-encoded encrypted file. To copy in <code>oauth-services.json.encrypted</code> file</p>
                     <textarea id="ciphertext"></textarea>
                 </div>
             </section>
