@@ -3,55 +3,50 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-import { onGithubCallback } from './github.js'
-import { onGitlabCallback } from './gitlab.js'
+import Fastify from 'fastify'
+
+import './types.js'
+
+import { makeGithubRouteHandler } from './github.js'
+import { makeGitlabRouteHandler } from './gitlab.js'
 import { htmlTemplate, allowlist } from './tools.js'
 import { decryptOauthServicesContent } from './oauthServicesDecrypt.js'
 
 
-import Fastify from 'fastify'
-/*
 if(!process.env.OAUTH_SERVICES_DECRYPTION_KEY){
   console.error(`Il manque la variable d'environnement OAUTH_SERVICES_DECRYPTION_KEY.`)
   process.exit(1);
 }
 
-if(!process.env.ORIGIN){
-  console.error(`Il manque la variable d'environnement "ORIGIN".`)
+if(!process.env.TOCTOCTOC_ORIGIN){
+  console.error(`Il manque la variable d'environnement "TOCTOCTOC_ORIGIN".`)
   process.exit(1);
-}*/
+}
 
-/*
+const toctoctocOrigin = process.env.TOCTOCTOC_ORIGIN
+
 const ENCRYPTED_OAUTH_SERVICES_FILE = './oauth-services.json.encrypted';
 
-const filePath = resolve(ENCRYPTED_OAUTH_SERVICES_FILE);
-const encryptedOauthServicesConfigContent = await readFile(filePath, { encoding: 'utf8' });
-const oauthServicesConfigContent = decryptOauthServicesContent(
+const encryptedOauthServicesConfigContent = await readFile(resolve(ENCRYPTED_OAUTH_SERVICES_FILE), { encoding: 'utf8' });
+
+const oauthServicesConfigContent = await decryptOauthServicesContent(
   encryptedOauthServicesConfigContent, 
   process.env.OAUTH_SERVICES_DECRYPTION_KEY
 )
 
+console.log('Oauth services config (after decryption): ', oauthServicesConfigContent)
 
+/** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
 const oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
 
+const {github: githubConfig, gitlab: gitlabConfigs} = oauthServicesConfig;
 
-const {github, gitlab} = oauthServicesConfig;
-
-if(!github && !gitlab){
-  console.error('')
+if(!githubConfig && !gitlabConfigs){
+  console.error('Missing github or gitlab configuration')
+  // process.exit(1)
 }
 
-*/
 
-
-
-/*
-const githubClientId = process.env.GITHUB_OAUTH_APP_CLIENT_ID || ""
-const githubClientSecret = process.env.GITHUB_OAUTH_APP_CLIENT_SECRET || ""
-const gitlabClientId = process.env.GITLAB_OAUTH_APP_CLIENT_ID || ""
-const gitlabClientSecret = process.env.GITLAB_OAUTH_APP_CLIENT_SECRET || ""
-*/
-const origin = process.env.ORIGIN
 const port = process.env.PORT || 4000
 const host = process.env.HOST || 'localhost'
 
@@ -68,7 +63,7 @@ server.get('/' , (req, res) => {
         ${[...allowlist].map(hostname => `<li>${hostname}</li>`).join('')}
       </ul>
     </p>
-
+    <p>Pour chiffrer le fichier de config, <a href="/oauth-services-config">c'est par ici</a></p>
   `))
 })
 
@@ -82,20 +77,24 @@ server.get('/oauthServicesDecrypt.js' , async (req, res) => {
   res.send(await readFile(resolve('./oauthServicesDecrypt.js'), { encoding: 'utf8' }))
 })
 
-/*
-server.get(
-  "/github-callback",
-  onGithubCallback(githubClientId, githubClientSecret),
-)
+if(githubConfig){
+  server.get("/github-callback", makeGithubRouteHandler(githubConfig))
+}
 
-server.get(
-  "/gitlab-callback",
-  onGitlabCallback(gitlabClientId, gitlabClientSecret, origin),
-)*/
+if(Array.isArray(gitlabConfigs)){
+  for(const gitlabConfig of gitlabConfigs){
+    const {origin} = gitlabConfig
+    
+    server.get(
+      `/gitlab-callback/${origin}`, makeGitlabRouteHandler(gitlabConfig, toctoctocOrigin),
+    )
+  }
+}
+
 
 // @ts-ignore
 server.listen({ port, host }, (err, address) => {
-  console.log(`Server is listening on ${address}  `)
+  console.log(`Server is listening on http://${host}:${port}`)
 })
 
 process.on('uncaughtException', e => console.error('uncaughtException', e))

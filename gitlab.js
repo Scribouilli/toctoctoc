@@ -3,12 +3,13 @@ import got from 'got'
 import { htmlTemplate, allowlist } from './tools.js'
 
 /**
- * @param {string} client_id
- * @param {string} client_secret
+ * @param {import('./types.js').GitlabOauthServiceConfiguration} gitlabConfig
+ * @param {string} toctoctocOrigin
+ * @returns {import('fastify').RouteHandler}
  */
-export const onGitlabCallback = (client_id, client_secret, origin) => {
-  // @ts-ignore
+export const makeGitlabRouteHandler = ({client_id, client_secret, origin}, toctoctocOrigin) => {
   return (req, res) => {
+  // @ts-ignore
     const {code, destination, state} = req.query
 
     if(!code){
@@ -16,7 +17,7 @@ export const onGitlabCallback = (client_id, client_secret, origin) => {
         .header('Content-Type', 'text/html')
         .send(htmlTemplate`
           <h1>Erreur</h1>
-          <p>le paramètre <code>code<code> est manquant</p>
+          <p>le paramètre <code>code</code> est manquant</p>
           <p>Peut-être que l'API GitLab ne fonctionne plus pareil. Regarder l'API Rest GitLab</p>
         `)
       return;
@@ -30,8 +31,8 @@ export const onGitlabCallback = (client_id, client_secret, origin) => {
         .header('Content-Type', 'text/html')
         .send(htmlTemplate(`
           <h1>Erreur</h1>
-          <p>le paramètre <code>destination<code> n'a pas de hostname. (destination : ${destination})</p>
-          <p>Rajouter une origine au paramètre <code>destination<code>
+          <p>le paramètre <code>destination</code> n'a pas de hostname. (destination : ${destination})</p>
+          <p>Rajouter une origine au paramètre <code>destination</code>
         `))
       return;
     }
@@ -52,8 +53,8 @@ export const onGitlabCallback = (client_id, client_secret, origin) => {
       return;
     }
 
-    const parameters = `client_id=${client_id}&client_secret=${client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=${origin}/gitlab-callback?destination=${destination}`
-    const urlGitlabOAuth =`https://gitlab.com/oauth/token?${parameters}`
+    const parameters = `client_id=${client_id}&client_secret=${client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=${toctoctocOrigin}/gitlab-callback?destination=${destination}`
+    const urlGitlabOAuth =`${origin}/oauth/token?${parameters}`
 
     got.post(urlGitlabOAuth, { json: true }).then(gitlabResponse => {
       const response = JSON.parse(gitlabResponse.body)
@@ -74,6 +75,8 @@ export const onGitlabCallback = (client_id, client_secret, origin) => {
       redirectUrl.searchParams.set(`refresh_token`, refresh_token)
       redirectUrl.searchParams.set(`expires_in`, expires_in)
       redirectUrl.searchParams.set(`state`, state)
+      redirectUrl.searchParams.set(`type`, 'gitlab')
+      redirectUrl.searchParams.set(`origin`, origin)
 
       res.redirect(302, redirectUrl.toString())
     }).catch(e => {

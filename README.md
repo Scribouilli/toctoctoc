@@ -76,7 +76,7 @@ You need to fill the client id and client secret of at least one service.
 - `OAUTH_SERVICES_DECRYPTION_KEY`: a key to decrypt `oauth-services.json.encrypted`
 - `PORT`: The port this server will listen to. By default, it's `4000`.
 - `HOST`: The host this server will listen to. By default, it's `localhost`.
-- `ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
+- `TOCTOCTOC_ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
   of your toctoctoc server. It is defined by the protocol, the
   hostname and the port of the URL you use to access your toctoctoc server. (eg.
   `http://localhost:4000`)
@@ -90,9 +90,8 @@ The one provided in the repo is an example file. It **should not** contain the r
 because they should be kept secret
 
 Instead, you should create a `oauth-services.json.encrypted` file. It's an encrypted 
-`oauth-services.json` file. It can be done easily using [the heper web app](oauth-services-config.html)
-
-
+`oauth-services.json` file. It can be done easily using [the helper web app](oauth-services-config.html).
+It is available at `<your toctoctoc origin>/oauth-services-config`
 
 
 

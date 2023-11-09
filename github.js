@@ -3,12 +3,19 @@ import got from 'got'
 import { htmlTemplate, allowlist } from './tools.js'
 
 /**
- * @param {string} client_id
- * @param {string} client_secret
+ * @param {import('./types.js').GithubOauthServiceConfiguration} githubConfig
+ * @returns {import('fastify').RouteHandler}
  */
-export const onGithubCallback = (client_id, client_secret) => {
-  // @ts-ignore
+export const makeGithubRouteHandler = ({client_id, client_secret}) => {
+  if(!client_id){
+    throw new TypeError('Missing github.client_id in configuration')
+  }
+  if(!client_secret){
+    throw new TypeError('Missing github.client_secret in configuration')
+  }
+  
   return (req, res) => {
+    //@ts-ignore
     const {code, destination} = req.query
 
     if(!code){
@@ -16,7 +23,7 @@ export const onGithubCallback = (client_id, client_secret) => {
         .header('Content-Type', 'text/html')
         .send(htmlTemplate`
         <h1>Erreur</h1>
-        <p>le paramètre <code>code<code> est manquant</p>
+        <p>le paramètre <code>code</code> est manquant</p>
         <p>Peut-être que l'API github ne fonctionne plus pareil. Regarder l'API Rest github</p>
       `)
       return;
@@ -26,7 +33,7 @@ export const onGithubCallback = (client_id, client_secret) => {
         .header('Content-Type', 'text/html')
         .send(htmlTemplate`
         <h1>Erreur</h1>
-        <p>le paramètre <code>destination<code> est manquant.</p>
+        <p>le paramètre <code>destination</code> est manquant.</p>
         <p>Il est sûrement manquant en tant que paramètre du <code>redirect_uri</code> du lien "login with github"
       `)
       return;
@@ -40,7 +47,7 @@ export const onGithubCallback = (client_id, client_secret) => {
         .header('Content-Type', 'text/html')
         .send(htmlTemplate(`
         <h1>Erreur</h1>
-        <p>le paramètre <code>destination<code> n'a pas de hostname. (destination : ${destination})</p>
+        <p>le paramètre <code>destination</code> n'a pas de hostname. (destination : ${destination})</p>
         <p>Rajouter une origine au paramètre <code>destination<code>
       `))
       return;
@@ -80,6 +87,8 @@ export const onGithubCallback = (client_id, client_secret) => {
       }
 
       redirectUrl.searchParams.set(`access_token`, access_token)
+      redirectUrl.searchParams.set(`type`, 'github')
+
       res.redirect(302, redirectUrl.toString())
     })
   }
