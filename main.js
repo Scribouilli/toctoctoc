@@ -38,12 +38,14 @@ console.log('Oauth services config (after decryption): ', oauthServicesConfigCon
 
 /** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
 const oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
+// this will throw if the config is not proper JSON. This is intentional
+
 
 const {github: githubConfig, gitlab: gitlabConfigs} = oauthServicesConfig;
 
 if(!githubConfig && !gitlabConfigs){
   console.error('Missing github or gitlab configuration')
-  // process.exit(1)
+  process.exit(1)
 }
 
 
