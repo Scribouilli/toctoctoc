@@ -94,6 +94,22 @@ Instead, you should create a `oauth-services.json.encrypted` file. It's an encry
 It is available at `<your toctoctoc origin>/oauth-services-config`
 
 
+##### Getting started with the encryption part
+
+Starting the server without a `OAUTH_SERVICES_DECRYPTION_KEY` should fail.
+
+You can use this as `OAUTH_SERVICES_DECRYPTION_KEY`
+```
+w6UTwqYiKgbDocOBwpcnwq4sVcKEw49rbsKHwp/Ci8O2ecKKOW3Ct8Otw4EPw5nCl8O3-wrlIwqJjw7xRwqZiw4ZPFkTCpsKVP8Kb
+```
+
+and this is as `oauth-services.json.encrypted`
+```
+w4pfw7VwamXCmEodNcO+AsKTKxrDrVvDgSfDn35EwrXDr8Kkw4hRw4pKwqxLwpVgVEcqUcOdXn5cdsO2w73CjQPCiQsSbhJEEyF7UEceOcKaw6/DpFUVPcOhwqfCkcOlw7kmFsKlbMOmbgTDs8KVSxbCrMKAw7NhMhvCqCAjdmk/w7rCgg7CjRjDjzczA8OUwqEkwpMNXsKiwovCgxtWGxfCvX9tTxDCuEc2w53DuEzCt0pgw4zDrsKCw73CvDJxUMOHw7jDsBjDkRZrw5zCkMOfw4rDnSzDvk7CtxZOwqTCm8Oxw68fw73Ch8O2eGcQbcOmw7HCvMO+BhXDhBDDs8KWwoDDsXDDrlsyHSk2XVvDrcKBBMKsYV/Dh8OkO0c8woIJIcOXwpNfPMOVNyZPw7YTNFjDjT3DhifCmMKtw7fCnHogDyPCh0cMw4F5Ih4xw7rDvgEOwpjCtQ==
+```
+
+This should decrypt into the example (and initially useless) `oauth-services.json` file
+
 
 ### 5 - Start the server
 
