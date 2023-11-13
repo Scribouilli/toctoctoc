@@ -5,7 +5,8 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "env-cmd node main.js",
+    "start": "node main.js",
+    "env-start": "env-cmd node main.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "ts": "tsc"
@@ -15,7 +16,7 @@
     "got": "^12.6.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "repository": {
     "type": "git",
