@@ -14,6 +14,13 @@
  * @typedef {BaseOauthServiceConfiguration} GithubOauthServiceConfiguration
  */
 
+
 /**
- * @typedef {BaseOauthServiceConfiguration & {origin: string}} GitlabOauthServiceConfiguration
+ * @typedef {Object} SpecificGitlabOauthServiceConfiguration
+ * @property {string} origin
+ * @property {string} redirect_uri
+ */
+
+/**
+ * @typedef {BaseOauthServiceConfiguration & SpecificGitlabOauthServiceConfiguration} GitlabOauthServiceConfiguration
  */

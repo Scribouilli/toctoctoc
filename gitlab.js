@@ -4,12 +4,13 @@ import { htmlTemplate, allowlist } from './tools.js'
 
 /**
  * @param {import('./types.js').GitlabOauthServiceConfiguration} gitlabConfig
- * @param {string} toctoctocOrigin
  * @returns {import('fastify').RouteHandler}
  */
-export const makeGitlabRouteHandler = ({client_id, client_secret, origin}, toctoctocOrigin) => {
+export const makeGitlabRouteHandler = ({origin: gitlabInstanceOrigin, client_id, client_secret, redirect_uri: oauthAppRedirectURI}) => {
   return (req, res) => {
-  // @ts-ignore
+    console.log('gitlab route', req.url, gitlabInstanceOrigin)
+
+    // @ts-ignore
     const {code, destination, state} = req.query
 
     if(!code){
@@ -23,8 +24,8 @@ export const makeGitlabRouteHandler = ({client_id, client_secret, origin}, tocto
       return;
     }
 
-    const redirectUrl = new URL(destination)
-    const hostname = redirectUrl.hostname
+    const finalRedirectURL = new URL(destination)
+    const hostname = finalRedirectURL.hostname
 
     if(!hostname){
       res.status(400)
@@ -53,8 +54,8 @@ export const makeGitlabRouteHandler = ({client_id, client_secret, origin}, tocto
       return;
     }
 
-    const parameters = `client_id=${client_id}&client_secret=${client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=${toctoctocOrigin}/gitlab-callback?destination=${destination}`
-    const urlGitlabOAuth =`${origin}/oauth/token?${parameters}`
+    const parameters = `client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${oauthAppRedirectURI}&code=${code}&grant_type=authorization_code`
+    const urlGitlabOAuth =`${gitlabInstanceOrigin}/oauth/token?${parameters}`
 
     got.post(urlGitlabOAuth, { json: true }).then(gitlabResponse => {
       const response = JSON.parse(gitlabResponse.body)
@@ -71,18 +72,21 @@ export const makeGitlabRouteHandler = ({client_id, client_secret, origin}, tocto
         return;
       }
 
-      redirectUrl.searchParams.set(`access_token`, access_token)
-      redirectUrl.searchParams.set(`refresh_token`, refresh_token)
-      redirectUrl.searchParams.set(`expires_in`, expires_in)
-      redirectUrl.searchParams.set(`state`, state)
-      redirectUrl.searchParams.set(`type`, 'gitlab')
-      redirectUrl.searchParams.set(`origin`, origin)
+      finalRedirectURL.searchParams.set(`access_token`, access_token)
+      finalRedirectURL.searchParams.set(`refresh_token`, refresh_token)
+      finalRedirectURL.searchParams.set(`expires_in`, expires_in)
+      finalRedirectURL.searchParams.set(`state`, state)
+      finalRedirectURL.searchParams.set(`type`, 'gitlab')
+      finalRedirectURL.searchParams.set(`origin`, gitlabInstanceOrigin)
 
-      res.redirect(302, redirectUrl.toString())
+      res.redirect(302, finalRedirectURL.toString())
     }).catch(e => {
       console.error(e)
       console.error(e.response)
-      res.status(500)
+      res.status(502)
+        .send(`Error when trying to get a token from gitlab instance ${gitlabInstanceOrigin}. 
+          Tried ${urlGitlabOAuth} and got response code ${e.response.statusCode}.
+          With message: ${e.response.body}`)
     })
   }
 }

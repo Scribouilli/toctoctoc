@@ -36,17 +36,17 @@ const toctoctocOrigin = process.env.TOCTOCTOC_ORIGIN
 
 const ENCRYPTED_OAUTH_SERVICES_FILE = './oauth-services.json.encrypted';
 
-let encryptedOauthServicesConfigContent,
-  oauthServicesConfigContent,
-  oauthServicesConfig,
-  githubConfig,
-  gitlabConfigs;
+/** @type {import('./types.js').GithubOauthServiceConfiguration | undefined} */
+let githubConfig;
+
+/** @type {import('./types.js').GitlabOauthServiceConfiguration[] | undefined} */
+let gitlabConfigs;
 
 
 if(decryptConfig){
-  encryptedOauthServicesConfigContent = await readFile(resolve(ENCRYPTED_OAUTH_SERVICES_FILE), { encoding: 'utf8' });
+  const encryptedOauthServicesConfigContent = await readFile(resolve(ENCRYPTED_OAUTH_SERVICES_FILE), { encoding: 'utf8' });
 
-  oauthServicesConfigContent = await decryptOauthServicesContent(
+  const oauthServicesConfigContent = await decryptOauthServicesContent(
     encryptedOauthServicesConfigContent, 
     // @ts-ignore
     process.env.OAUTH_SERVICES_DECRYPTION_KEY
@@ -55,9 +55,8 @@ if(decryptConfig){
   console.log('Oauth services config (after decryption): ', oauthServicesConfigContent)
 
   /** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
-  oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
+  const oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
   // this will throw if the config is not proper JSON. This is intentional
-
 
   const {github, gitlab} = oauthServicesConfig;
   githubConfig = github;
@@ -110,7 +109,7 @@ if(Array.isArray(gitlabConfigs)){
     const {origin} = gitlabConfig
     
     server.get(
-      `/gitlab-callback/${origin}`, makeGitlabRouteHandler(gitlabConfig, toctoctocOrigin),
+      `/gitlab-callback/${origin}/`, makeGitlabRouteHandler(gitlabConfig),
     )
   }
 }

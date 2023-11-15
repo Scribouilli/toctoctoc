@@ -47,5 +47,5 @@ export function isToctoctocOauthServicesConfiguration(obj) {
    */
   function isGitlabOauthServiceConfiguration(obj) {
     // @ts-ignore
-    return isBaseOauthServiceConfiguration(obj) && typeof obj.origin === 'string';
+    return isBaseOauthServiceConfiguration(obj) && typeof obj.origin === 'string' && typeof obj.redirect_uri === 'string';
   }
