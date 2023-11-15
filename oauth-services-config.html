@@ -2,11 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
         <meta name="referrer" content="no-referrer">
         
         <title>Toctoctoc Oauth services configuration</title>
         
-        <meta name="description" content=" ">
+        <meta name="robots" content="noindex">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="data:,">
         
@@ -216,6 +217,11 @@
                 const cipherTextInput = document.querySelector('#ciphertext');
 
                 encryptButton.addEventListener('click', async () => {
+                    const completeKey = completeKeyInput.value
+                    const {k, iv} = await keyAndIvFromString(completeKey)
+                    key = k;
+                    initializationVector = iv
+
                     const plaintext = (new TextEncoder()).encode(plainTextInput.value);
 
                     console.log('plaintext', plaintext)
@@ -234,7 +240,9 @@
                     cipherTextInput.value = typedArrayToBase64(new Uint8Array(ciphertext))
                 })
 
-
+                /**
+                 * Decryption
+                 */
                 const decryptButton = document.querySelector('#decrypt');
 
                 decryptButton.addEventListener('click', async () => {
