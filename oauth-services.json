@@ -5,7 +5,7 @@
     },
     "gitlab": [
         {
-            "origin": "https://gitlab.org",
+            "origin": "https://gitlab.com",
             "client_id": "a",
             "client_secret": "b"
         }
