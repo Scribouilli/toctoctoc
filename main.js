@@ -12,8 +12,17 @@ import { makeGitlabRouteHandler } from './gitlab.js'
 import { htmlTemplate, allowlist } from './tools.js'
 import { decryptOauthServicesContent } from './oauthServicesDecrypt.js'
 
+const NO_DECRYPT_FLAG = '--no-decrypt-config'
 
-if(!process.env.OAUTH_SERVICES_DECRYPTION_KEY){
+let decryptConfig = true
+
+if(process.argv.includes(NO_DECRYPT_FLAG)){
+  decryptConfig = false
+  console.log('Server starting without configuration')
+}
+
+
+if(decryptConfig && !process.env.OAUTH_SERVICES_DECRYPTION_KEY){
   console.error(`Il manque la variable d'environnement OAUTH_SERVICES_DECRYPTION_KEY.`)
   process.exit(1);
 }
@@ -27,27 +36,38 @@ const toctoctocOrigin = process.env.TOCTOCTOC_ORIGIN
 
 const ENCRYPTED_OAUTH_SERVICES_FILE = './oauth-services.json.encrypted';
 
-const encryptedOauthServicesConfigContent = await readFile(resolve(ENCRYPTED_OAUTH_SERVICES_FILE), { encoding: 'utf8' });
-
-const oauthServicesConfigContent = await decryptOauthServicesContent(
-  encryptedOauthServicesConfigContent, 
-  process.env.OAUTH_SERVICES_DECRYPTION_KEY
-)
-
-console.log('Oauth services config (after decryption): ', oauthServicesConfigContent)
-
-/** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
-const oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
-// this will throw if the config is not proper JSON. This is intentional
+let encryptedOauthServicesConfigContent,
+  oauthServicesConfigContent,
+  oauthServicesConfig,
+  githubConfig,
+  gitlabConfigs;
 
 
-const {github: githubConfig, gitlab: gitlabConfigs} = oauthServicesConfig;
+if(decryptConfig){
+  encryptedOauthServicesConfigContent = await readFile(resolve(ENCRYPTED_OAUTH_SERVICES_FILE), { encoding: 'utf8' });
 
-if(!githubConfig && !gitlabConfigs){
-  console.error('Missing github or gitlab configuration')
-  process.exit(1)
+  oauthServicesConfigContent = await decryptOauthServicesContent(
+    encryptedOauthServicesConfigContent, 
+    // @ts-ignore
+    process.env.OAUTH_SERVICES_DECRYPTION_KEY
+  )
+
+  console.log('Oauth services config (after decryption): ', oauthServicesConfigContent)
+
+  /** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
+  oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
+  // this will throw if the config is not proper JSON. This is intentional
+
+
+  const {github, gitlab} = oauthServicesConfig;
+  githubConfig = github;
+  gitlabConfigs = gitlab;
+
+  if(!githubConfig && !gitlabConfigs){
+    console.error('Missing github or gitlab configuration')
+    process.exit(1)
+  }
 }
-
 
 const port = process.env.PORT || 4000
 const host = process.env.HOST || 'localhost'
@@ -69,14 +89,16 @@ server.get('/' , (req, res) => {
   `))
 })
 
+const oauth_services_config_html_content = await readFile(resolve('./oauth-services-config.html'), { encoding: 'utf8' })
+const oauthServicesDecrypt_js_content = await readFile(resolve('./oauthServicesDecrypt.js'), { encoding: 'utf8' })
 
 server.get('/oauth-services-config' , async (req, res) => {
   res.header('Content-Type', 'text/html')
-  res.send(await readFile(resolve('./oauth-services-config.html'), { encoding: 'utf8' }))
+  res.send(oauth_services_config_html_content)
 })
 server.get('/oauthServicesDecrypt.js' , async (req, res) => {
   res.header('Content-Type', 'text/javascript')
-  res.send(await readFile(resolve('./oauthServicesDecrypt.js'), { encoding: 'utf8' }))
+  res.send(oauthServicesDecrypt_js_content)
 })
 
 if(githubConfig){
