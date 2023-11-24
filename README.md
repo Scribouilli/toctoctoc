@@ -100,6 +100,15 @@ It is available at `<your toctoctoc origin>/oauth-services-config`
 `npm run start:no-config` if you use environment variables directly
 
 
+#### Changing the configuration
+
+Changing the configuration requires the coordination of different changes in different places.
+For instance, if you want to change the `redirect_uri` of a gitlab config, you need to:
+- set the new redirect uri in the oauth app on the gitlab instance
+- change the encrypted configuration (in this repo of wherever your configuration is).
+  - You should change the encryption key as well
+- deploy with the new encryption key and new encrypted configuration
+
 
 ### 5 - Start the server
 
