@@ -1,10 +1,13 @@
 {
     "compilerOptions": {
+        "target": "es2017",
+        "module": "NodeNext",
+        "moduleResolution": "nodenext",
         "allowJs": true,
         "checkJs": true,
         "noEmit": true,
         "strict": true,
-        "lib": ["ES2022"],
+        "lib": ["ES2022", "DOM"],
         "downlevelIteration": true
     }
 }

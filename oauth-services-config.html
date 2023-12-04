@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
+        <meta name="referrer" content="no-referrer">
+        
+        <title>Toctoctoc Oauth services configuration</title>
+        
+        <meta name="robots" content="noindex">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="data:,">
+        
+        <style>
+            /*
+            http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+            */
+            *, *:before, *:after {
+                box-sizing: border-box;
+                /* if you really care about older browsers, add prefixed versions at your own risks */
+            }
+
+            /*
+            Repeating the background mostly makes sense in the <body>. Otherwise, people usually want the image and preferably its center (not the top-right corner)
+            */
+            *:not(body) {
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-size: cover;
+            }
+
+            /*
+            Makes the hidden attribute works even when an element is styled display: flex
+            http://lists.w3.org/Archives/Public/public-whatwg-archive/2014May/0001.html
+            */
+            [hidden] {
+                display: none !important;
+            }
+
+
+            html, body {
+                padding: 0;
+                margin: 0;
+            }
+
+            /*
+            In applications, there can be lists but HTML lists have bullet points and a bunch of useless styling attributes 
+            */
+            ul, ol, menu {
+                margin: 0;
+                padding: 0;
+
+            }
+
+            ul, menu {
+                list-style: none;
+            }
+
+            li {
+                margin: 0;
+                padding: 0;
+            }
+
+            button{
+                cursor: pointer;
+            }
+
+            /* default iframe borders are just ugly */
+            iframe{
+                border: 0;
+            }
+
+
+            * {
+                border-collapse: collapse;
+            }
+
+        </style>
+
+        <style>
+            body{
+                font-size: 18px;
+                background-color: lightsteelblue;
+            }
+
+            input, textarea{
+                background-color: #DDD;
+            }
+
+            input, textarea, button{
+                margin: 0 1rem;
+            }
+
+            textarea{
+                width: 20rem;
+                height: 20rem;
+            }
+
+            button{
+                font-size: 1.3rem;
+                padding: .7em;
+            }
+
+            main{
+                width: 70%;
+                margin: 0 auto;
+            }
+
+            .key{
+                display: flex;
+                flex-direction: row; 
+                justify-content: center;
+                margin-bottom: 3rem;
+            }
+
+            .key label{
+                display: flex;
+                flex-direction: row; 
+                align-items: center;
+            }
+
+            #renew{
+                width: 7em;
+            }
+
+            .texts{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+
+                height: 30rem;
+            }
+            
+            .texts > div{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .texts > div > header{
+                height: 9rem;
+            }
+            .texts > div > header h2{
+                text-align: center;
+            }
+            .texts > div > header > p{
+                font-size: 0.8em;
+            }
+
+            .texts .buttons{
+                justify-content: space-evenly;
+                height: 100%;
+            }
+
+            .texts > div:not(.buttons){
+                width: 30rem;
+                padding: 0 2rem;
+            }
+
+        </style>
+
+        <script type="module">
+            import {b64ToUTF8, base64ToUint8Array, keyAndIvFromString, typedArrayToString, decryptOauthServicesContent} from './oauthServicesDecrypt.js'
+
+            // adapted from https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_1_%E2%80%93_escaping_the_string_before_encoding_it
+            function UTF8ToB64(s) {
+                return btoa(unescape(encodeURIComponent(s)))
+            }
+
+            const typedArrayToBase64 = typedArray => {
+                return UTF8ToB64(typedArrayToString(typedArray))
+            }
+
+            function makeCompleteKeyString(key, initializationVector){
+                console.log(key, initializationVector)
+                const k = typedArrayToBase64(new Uint8Array(key))
+                const iv = typedArrayToBase64(initializationVector) 
+
+                return `${k}-${iv}`
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                /**
+                 * Key renewal
+                 */
+                const renewButton = document.querySelector('#renew');
+                const completeKeyInput = document.querySelector('#complete-key');
+
+                let initializationVector;
+                let key;
+
+                renewButton.addEventListener('click', async () => {
+                    initializationVector = crypto.getRandomValues(new Uint8Array(16));
+
+                    const k = await crypto.subtle.generateKey(
+                        {
+                            name: "AES-CBC",
+                            length: 256
+                        },
+                        true,
+                        ["encrypt", "decrypt"]
+                    )
+                    
+                    key = k
+
+                    const abKey = await crypto.subtle.exportKey('raw', key)
+                        
+                    const completeKey = makeCompleteKeyString(abKey, initializationVector);
+                    completeKeyInput.value = completeKey;
+                })
+
+                /**
+                 * Encryption
+                 */
+                const encryptButton = document.querySelector('#encrypt');
+                const plainTextInput = document.querySelector('#plaintext');
+                const cipherTextInput = document.querySelector('#ciphertext');
+
+                encryptButton.addEventListener('click', async () => {
+                    const completeKey = completeKeyInput.value
+                    const {k, iv} = await keyAndIvFromString(completeKey)
+                    key = k;
+                    initializationVector = iv
+
+                    const plaintext = (new TextEncoder()).encode(plainTextInput.value);
+
+                    console.log('plaintext', plaintext)
+
+                    const ciphertext = await window.crypto.subtle.encrypt(
+                        {
+                            name: "AES-CBC",
+                            iv: initializationVector
+                        },
+                        key,
+                        plaintext
+                    );
+
+                    console.log('ciphertext', ciphertext)
+
+                    cipherTextInput.value = typedArrayToBase64(new Uint8Array(ciphertext))
+                })
+
+                /**
+                 * Decryption
+                 */
+                const decryptButton = document.querySelector('#decrypt');
+
+                decryptButton.addEventListener('click', async () => {
+                    const ciphertext = cipherTextInput.value
+                    const completeKey = completeKeyInput.value
+
+                    plainTextInput.value = await decryptOauthServicesContent(ciphertext, completeKey)
+
+                    if(!key || !initializationVector){
+                        const {k, iv} = await keyAndIvFromString(completeKey)
+                        key = k;
+                        initializationVector = iv
+                    }
+                })
+            })
+        </script>
+
+    </head>
+    <body>
+        <main>
+            <h1>Toctoctoc Oauth services configuration</h1>
+            <section class="key">
+                <label>
+                    <code>OAUTH_SERVICES_CONFIG_ENCRYPTION_KEY</code>
+                    <input id="complete-key" type="text" autocomplete="off">
+                </label>
+                <button id="renew">↻ Renew</button>
+            </section>
+
+            <section class="texts">
+                <div>
+                    <header>
+                        <h2>JSON configuration content</h2>
+                    </header>
+                    <textarea id="plaintext"></textarea>
+                </div>
+                <div class="buttons">
+                    <header></header>
+                    <button id="encrypt">→ Encrypt</button>
+                    <button id="decrypt">← Decrypt</button>
+                </div>
+                <div>
+                    <header>
+                        <h2>Encrypted</h2>
+                        <p>Base64-encoded encrypted file. To copy in <code>oauth-services.json.encrypted</code> file</p>
+                    </header>
+                    <textarea id="ciphertext"></textarea>
+                </div>
+            </section>
+        </main>
+
+    </body>
+</html>

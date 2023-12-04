@@ -29,5 +29,5 @@ export const htmlTemplate = (content) => {
 }
 
 export const allowlist = new Set(
-  readFileSync('./allowlist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim())
+  readFileSync('./allowlist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim()).filter(x => !!x)
 )

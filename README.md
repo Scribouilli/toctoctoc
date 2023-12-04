@@ -1,13 +1,13 @@
 # Toctoctoc
 
-This project is a generic server to connect to a OAuth identity service.
-Currently, the implemented services are GitHub and GitLab through `gitlab.com`.
+This project is a generic server to connect to an OAuth identity service.
+Currently, the implemented services are GitHub and GitLab instances.
 
 After having logged in with the service, this server forwards everything useful
 (secret token, refresh token if necessary) to the client-side. From there, the
 client-side code communicates directly with the service without intermediaries.
 This is possible with the implemented services (GitHub, GitLab) because they have
-CORS headers open on many API endpoints.
+CORS headers open on most API endpoints.
 
 - [Workflow example](#workflow-example)
 - [How to install toctoctoc](#how-to-install-toctoctoc)
@@ -67,22 +67,48 @@ Install dependencies
 npm install
 ```
 
-### 4 - Setup the environment variables
+### 4 - Setup the environment variables and OAuth services configuration
+
+#### Environment variables
 
 You need to fill the client id and client secret of at least one service.
 
-- `GITHUB_OAUTH_APP_CLIENT_ID`: GitHub OAuth application client id.
-- `GITHUB_OAUTH_APP_CLIENT_SECRET`: GitHub OAuth application client secret.
-- `GITLAB_OAUTH_APP_CLIENT_ID`: GitLab OAuth application id.
-- `GITLAB_OAUTH_APP_CLIENT_SECRET`: GitLab OAuth application secret.
+- `OAUTH_SERVICES_DECRYPTION_KEY`: a key to decrypt `oauth-services.json.encrypted`
 - `PORT`: The port this server will listen to. By default, it's `4000`.
 - `HOST`: The host this server will listen to. By default, it's `localhost`.
-- `ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
+- `TOCTOCTOC_ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
   of your toctoctoc server. It is defined by the protocol, the
   hostname and the port of the URL you use to access your toctoctoc server. (eg.
   `http://localhost:4000`)
 
 You can put these environment variables in an `.env` file.
+
+#### OAuth services configuration
+
+Oauth services are defined in the [oauth-services.json](oauth-services.json) file
+The one provided in the repo is an example file. It **should not** contain the real values
+because they should be kept secret
+
+Instead, you should create a `oauth-services.json.encrypted` file. It's an encrypted 
+`oauth-services.json` file. It can be done easily using [the helper web app](oauth-services-config.html).
+It is available at `<your toctoctoc origin>/oauth-services-config`
+
+
+##### Getting started without the encryption part
+
+`npm run env-start:no-config` if you use a `.env` file\
+`npm run start:no-config` if you use environment variables directly
+
+
+#### Changing the configuration
+
+Changing the configuration requires the coordination of different changes in different places.
+For instance, if you want to change the `redirect_uri` of a gitlab config, you need to:
+- set the new redirect uri in the oauth app on the gitlab instance
+- change the encrypted configuration (in this repo of wherever your configuration is).
+  - You should change the encryption key as well
+- deploy with the new encryption key and new encrypted configuration
+
 
 ### 5 - Start the server
 
