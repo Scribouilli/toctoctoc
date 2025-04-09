@@ -96,8 +96,7 @@ It is available at `<your toctoctoc origin>/oauth-services-config`
 
 ##### Getting started without the encryption part
 
-`npm run env-start:no-config` if you use a `.env` file\
-`npm run start:no-config` if you use environment variables directly
+`npm run start:no-config`
 
 
 #### Changing the configuration
@@ -116,8 +115,7 @@ For instance, if you want to change the `redirect_uri` of a gitlab config, you n
 sure that your OAuth application is setup correctly and your environment
 variables too.**
 
-Start the server. It will listen on the chosen port defined in your
-`.env` file.
+Start the server. It will listen on the chosen port defined in your `.env` file.
 
 ```sh
 npm start
