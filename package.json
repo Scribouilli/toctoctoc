@@ -5,10 +5,8 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "node main.js",
-    "env-start": "env-cmd node main.js",
-    "start:no-config": "node main.js --no-decrypt-config",
-    "env-start:no-config": "env-cmd node main.js --no-decrypt-config",
+    "start": "node --env-file=.env main.js",
+    "start:no-config": "node --env-file=.env main.js --no-decrypt-config",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "ts": "tsc"
@@ -32,7 +30,6 @@
   "homepage": "https://github.com/Scribouilli/toctoctoc#readme",
   "devDependencies": {
     "@types/node": "^20.8.6",
-    "env-cmd": "^10.1.0",
     "husky": "^8.0.3",
     "typescript": "^5.2.2"
   }
