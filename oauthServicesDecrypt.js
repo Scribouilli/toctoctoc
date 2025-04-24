@@ -8,6 +8,7 @@ const { subtle } = globalThis.crypto;
  * @returns {string}
  */
 export function b64ToUTF8(s) {
+    console.log('b64ToUTF8', s)
     return decodeURIComponent(escape(atob(s)))
 }
 
