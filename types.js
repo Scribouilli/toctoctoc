@@ -14,6 +14,11 @@
  * @typedef {BaseOauthServiceConfiguration} GithubOauthServiceConfiguration
  */
 
+/**
+ * @typedef {Object} TokenOauthServiceConfiguration
+ * @property {string} user_token
+ */
+
 
 /**
  * @typedef {Object} SpecificGitlabOauthServiceConfiguration

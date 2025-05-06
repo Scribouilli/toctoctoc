@@ -7,10 +7,11 @@ import Fastify from 'fastify'
 
 import './types.js'
 
-import { makeGithubRouteHandler } from './github.js'
+import { makeGithubRouteHandler, revokeGithubToken } from './github.js'
 import { makeGitlabRouteHandler } from './gitlab.js'
 import { htmlTemplate, allowlist } from './tools.js'
 import { decryptOauthServicesContent } from './oauthServicesDecrypt.js'
+
 
 const NO_DECRYPT_FLAG = '--no-decrypt-config'
 
@@ -54,6 +55,7 @@ if(decryptConfig){
 
   console.log('Oauth services config (after decryption): ', oauthServicesConfigContent)
 
+
   /** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
   const oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
   // this will throw if the config is not proper JSON. This is intentional
@@ -68,7 +70,7 @@ if(decryptConfig){
   }
 }
 
-const port = process.env.PORT || 4000
+const port = process.env.PORT || 8080
 const host = process.env.HOST || 'localhost'
 
 const server = Fastify()
@@ -102,6 +104,7 @@ server.get('/oauthServicesDecrypt.js' , async (req, res) => {
 
 if(githubConfig){
   server.get("/github-callback", makeGithubRouteHandler(githubConfig))
+  server.post('/github/revoke', revokeGithubToken(githubConfig))
 }
 
 if(Array.isArray(gitlabConfigs)){

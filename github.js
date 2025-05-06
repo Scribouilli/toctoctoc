@@ -93,3 +93,37 @@ export const makeGithubRouteHandler = ({client_id, client_secret}) => {
     })
   }
 }
+/**
+ * @param {import('./types.js').GithubOauthServiceConfiguration} githubConfig
+ * @returns {import('fastify').RouteHandler}
+ */
+export const revokeGithubToken = ({client_id, client_secret}) => {
+  return async (req, res) => {
+    //@ts-ignore
+    const { access_token } = req.body;
+    if(!client_id){
+      throw new TypeError('Missing github.client_id in configuration')
+    }
+    if(!client_secret){
+      throw new TypeError('Missing github.client_secret in configuration')
+    }
+
+    try {
+      const urlGithubOAuth =
+      `https://api.github.com/applications/${client_id}/token`
+
+      const response = await got.delete(urlGithubOAuth, {
+        username: client_id,
+        password: client_secret,
+        json: {
+          access_token
+        },
+        responseType: 'json'
+      });
+      res.status(200).send({ success: true })
+    }
+    catch (error) {
+      res.status(500).send({ error: 'Failed to revoke token' })
+    }
+  }
+}
