@@ -2,8 +2,11 @@
   "name": "toctoctoc",
   "version": "1.0.0",
   "license": "CC0-1.0",
-  "description": "",
+  "description": "Generic server to connect to an OAuth identity service.",
   "type": "module",
+  "bin": {
+    "toctoctoc": "./main.js"
+  },
   "scripts": {
     "start": "node --env-file=.env main.js",
     "start:no-config": "node --env-file=.env main.js --no-decrypt-config",
