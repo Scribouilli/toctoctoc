@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 
 /**
  *
@@ -28,6 +27,3 @@ export const htmlTemplate = (content) => {
     </html>`
 }
 
-export const allowlist = new Set(
-  readFileSync('./allowlist.csv', {encoding: 'utf8'}).split('\n').map(s => s.trim()).filter(x => !!x)
-)

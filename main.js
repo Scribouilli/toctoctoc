@@ -2,8 +2,10 @@
 
 //@ts-check
 
+import { readFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { parseArgs } from 'node:util';
 
 import Fastify from 'fastify'
 
@@ -11,15 +13,42 @@ import './types.js'
 
 import { makeGithubRouteHandler } from './github.js'
 import { makeGitlabRouteHandler } from './gitlab.js'
-import { htmlTemplate, allowlist } from './tools.js'
+import { htmlTemplate } from './tools.js'
 import { decryptOauthServicesContent } from './oauthServicesDecrypt.js'
 
-const NO_DECRYPT_FLAG = '--no-decrypt-config'
+// @ts-ignore
+const defaultAllowListFile = resolve(import.meta.dirname, './allowlist.csv')
 
-let decryptConfig = true
+const {
+  positionals: [cmd],
+  values: { 
+    "allowlist-file": allowListFile, 
+    "no-decrypt-config": noDecryptConfig,
+    help
+  },
+} = parseArgs({
+  options: {
+    help: { type: 'boolean', short: 'h', default: false },
+    "allowlist-file": { type: 'string', default: defaultAllowListFile },
+    "no-decrypt-config": { type: 'boolean', default: false },
+  },
+  allowPositionals: true,
+});
 
-if(process.argv.includes(NO_DECRYPT_FLAG)){
-  decryptConfig = false
+if (cmd === 'help' || help /*|| !cmd*/) {
+  console.log(`Usage: ${process.argv0} [...options] <command>
+
+Commands:
+
+Options:
+    -h, --help          Show this help message
+    --allowlist-file    allow-list file
+`)
+}
+
+const decryptConfig = !noDecryptConfig;
+
+if(!decryptConfig){
   console.log('Server starting without configuration')
 }
 
@@ -33,6 +62,19 @@ if(!process.env.TOCTOCTOC_ORIGIN){
   console.error(`Il manque la variable d'environnement "TOCTOCTOC_ORIGIN".`)
   process.exit(1);
 }
+
+
+const allowlist = new Set(
+  readFileSync(
+    // @ts-ignore
+    resolve(process.cwd(), allowListFile), 
+    {encoding: 'utf8'}
+  )
+  .split('\n').map(s => s.trim()).filter(x => !!x)
+)
+
+console.log('allowlist', allowlist)
+
 
 const toctoctocOrigin = process.env.TOCTOCTOC_ORIGIN
 
@@ -103,7 +145,7 @@ server.get('/oauthServicesDecrypt.js' , async (req, res) => {
 })
 
 if(githubConfig){
-  server.get("/github-callback", makeGithubRouteHandler(githubConfig))
+  server.get("/github-callback", makeGithubRouteHandler(githubConfig, allowlist))
 }
 
 if(Array.isArray(gitlabConfigs)){
@@ -111,7 +153,7 @@ if(Array.isArray(gitlabConfigs)){
     const {origin} = gitlabConfig
     
     server.get(
-      `/gitlab-callback/${origin}/`, makeGitlabRouteHandler(gitlabConfig),
+      `/gitlab-callback/${origin}/`, makeGitlabRouteHandler(gitlabConfig, allowlist),
     )
   }
 }

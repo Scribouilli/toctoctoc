@@ -1,12 +1,15 @@
+//@ts-check
+
 import got from 'got'
 
-import { htmlTemplate, allowlist } from './tools.js'
+import { htmlTemplate } from './tools.js'
 
 /**
  * @param {import('./types.js').GitlabOauthServiceConfiguration} gitlabConfig
+ * @param {Set<string>} hostnameAllowList
  * @returns {import('fastify').RouteHandler}
  */
-export const makeGitlabRouteHandler = ({origin: gitlabInstanceOrigin, client_id, client_secret, redirect_uri: oauthAppRedirectURI}) => {
+export const makeGitlabRouteHandler = ({origin: gitlabInstanceOrigin, client_id, client_secret, redirect_uri: oauthAppRedirectURI},  hostnameAllowList) => {
   return (req, res) => {
     console.log('gitlab route', req.url, gitlabInstanceOrigin)
 
@@ -38,7 +41,7 @@ export const makeGitlabRouteHandler = ({origin: gitlabInstanceOrigin, client_id,
       return;
     }
 
-    if(hostname !== 'localhost' && !allowlist.has(hostname)){
+    if(hostname !== 'localhost' && !hostnameAllowList.has(hostname)){
       res.status(403)
         .header('Content-Type', 'text/html')
         .send(htmlTemplate(`
@@ -46,7 +49,7 @@ export const makeGitlabRouteHandler = ({origin: gitlabInstanceOrigin, client_id,
           <p>La destination est ${destination}, et son hostname (${hostname}) n'est pas présent dans notre <a href="https://github.com/Scribouilli/toctoctoc/blob/main/allowlist.csv">liste de hostname autorisés</a>.</p>
           <p>Liste des hostname autorisés :
             <ul>
-              ${[...allowlist].map(hostname => `<li>${hostname}</li>`).join('')}
+              ${[...hostnameAllowList].map(hostname => `<li>${hostname}</li>`).join('')}
             </ul>
           </p>
           <p>Changer cette liste ou installez une nouvelle instance de toctoctoc où ce hostname est autorisé</p>
