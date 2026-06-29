@@ -129,8 +129,10 @@ server.get('/' , (req, res) => {
   `))
 })
 
-const oauth_services_config_html_content = await readFile(resolve('./oauth-services-config.html'), { encoding: 'utf8' })
-const oauthServicesDecrypt_js_content = await readFile(resolve('./oauthServicesDecrypt.js'), { encoding: 'utf8' })
+// @ts-ignore
+const oauth_services_config_html_content = await readFile(resolve(import.meta.dirname, './oauth-services-config.html'), { encoding: 'utf8' })
+// @ts-ignore
+const oauthServicesDecrypt_js_content = await readFile(resolve(import.meta.dirname, './oauthServicesDecrypt.js'), { encoding: 'utf8' })
 
 server.get('/oauth-services-config' , async (req, res) => {
   res.header('Content-Type', 'text/html')
