@@ -63,12 +63,6 @@ if(encryptedConfigFilepath && !process.env.OAUTH_SERVICES_DECRYPTION_KEY){
   process.exit(1);
 }
 
-if(!process.env.TOCTOCTOC_ORIGIN){
-  console.error(`Il manque la variable d'environnement "TOCTOCTOC_ORIGIN".`)
-  process.exit(1);
-}
-
-
 const allowlist = new Set(
   readFileSync(
     // @ts-ignore
@@ -81,7 +75,6 @@ const allowlist = new Set(
 console.log('allowlist', allowlist)
 
 
-const toctoctocOrigin = process.env.TOCTOCTOC_ORIGIN
 
 
 /** @type {import('./types.js').GithubOauthServiceConfiguration | undefined} */

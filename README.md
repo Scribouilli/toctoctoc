@@ -76,10 +76,6 @@ You need to fill the client id and client secret of at least one service.
 - `OAUTH_SERVICES_DECRYPTION_KEY`: a key to decrypt `oauth-services.json.encrypted`
 - `PORT`: The port this server will listen to. By default, it's `4000`.
 - `HOST`: The host this server will listen to. By default, it's `localhost`.
-- `TOCTOCTOC_ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
-  of your toctoctoc server. It is defined by the protocol, the
-  hostname and the port of the URL you use to access your toctoctoc server. (eg.
-  `http://localhost:4000`)
 
 You can put these environment variables in an `.env` file.
 
