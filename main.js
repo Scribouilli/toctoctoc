@@ -17,44 +17,49 @@ import { htmlTemplate } from './tools.js'
 import { decryptOauthServicesContent } from './oauthServicesDecrypt.js'
 
 // @ts-ignore
-const defaultAllowListFile = resolve(import.meta.dirname, './allowlist.csv')
+const DEFAULT_ALLOW_LIST_FILE = resolve(import.meta.dirname, './allowlist.csv')
+// @ts-ignore
+const DEFAULT_ENCRYPTED_OAUTH_SERVICES_FILE = resolve(import.meta.dirname, './oauth-services.json.encrypted');
+
 
 const {
   positionals: [cmd],
   values: { 
     "allowlist-file": allowListFile, 
-    "no-decrypt-config": noDecryptConfig,
+    "encrypted-config-file": encryptedConfigFilepath,
     help
   },
 } = parseArgs({
   options: {
     help: { type: 'boolean', short: 'h', default: false },
-    "allowlist-file": { type: 'string', default: defaultAllowListFile },
-    "no-decrypt-config": { type: 'boolean', default: false },
+    "allowlist-file": { type: 'string', default: DEFAULT_ALLOW_LIST_FILE },
+    "encrypted-config-file": { type: 'string' },
   },
   allowPositionals: true,
 });
 
 if (cmd === 'help' || help /*|| !cmd*/) {
-  console.log(`Usage: ${process.argv0} [...options] <command>
+  const helpText = `Usage: ${process.argv0} [...options] <command>
 
 Commands:
 
 Options:
-    -h, --help          Show this help message
-    --allowlist-file    allow-list file
-`)
+    -h, --help                Show this help message
+    --allowlist-file          Allow-list file path
+    --encrypted-config-file   Encrypted configuration file path
+`
+
+  console.log(helpText)
+  process.exit(0)
 }
 
-const decryptConfig = !noDecryptConfig;
 
-if(!decryptConfig){
+if(!encryptedConfigFilepath){
   console.log('Server starting without configuration')
 }
 
-
-if(decryptConfig && !process.env.OAUTH_SERVICES_DECRYPTION_KEY){
-  console.error(`Il manque la variable d'environnement OAUTH_SERVICES_DECRYPTION_KEY.`)
+if(encryptedConfigFilepath && !process.env.OAUTH_SERVICES_DECRYPTION_KEY){
+  console.error(`Il manque la variable d'environnement OAUTH_SERVICES_DECRYPTION_KEY pour déchiffrer le fichier de configuration.`)
   process.exit(1);
 }
 
@@ -67,7 +72,7 @@ if(!process.env.TOCTOCTOC_ORIGIN){
 const allowlist = new Set(
   readFileSync(
     // @ts-ignore
-    resolve(process.cwd(), allowListFile), 
+    resolve(allowListFile), 
     {encoding: 'utf8'}
   )
   .split('\n').map(s => s.trim()).filter(x => !!x)
@@ -78,7 +83,6 @@ console.log('allowlist', allowlist)
 
 const toctoctocOrigin = process.env.TOCTOCTOC_ORIGIN
 
-const ENCRYPTED_OAUTH_SERVICES_FILE = './oauth-services.json.encrypted';
 
 /** @type {import('./types.js').GithubOauthServiceConfiguration | undefined} */
 let githubConfig;
@@ -87,8 +91,8 @@ let githubConfig;
 let gitlabConfigs;
 
 
-if(decryptConfig){
-  const encryptedOauthServicesConfigContent = await readFile(resolve(ENCRYPTED_OAUTH_SERVICES_FILE), { encoding: 'utf8' });
+if(encryptedConfigFilepath){
+  const encryptedOauthServicesConfigContent = await readFile(resolve(encryptedConfigFilepath), { encoding: 'utf8' });
 
   const oauthServicesConfigContent = await decryptOauthServicesContent(
     encryptedOauthServicesConfigContent, 
