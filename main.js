@@ -17,9 +17,7 @@ import { htmlTemplate } from './tools.js'
 import { decryptOauthServicesContent } from './oauthServicesDecrypt.js'
 
 // @ts-ignore
-const DEFAULT_ALLOW_LIST_FILE = resolve(import.meta.dirname, './allowlist.csv')
-// @ts-ignore
-const DEFAULT_ENCRYPTED_OAUTH_SERVICES_FILE = resolve(import.meta.dirname, './oauth-services.json.encrypted');
+const DEFAULT_ALLOW_LIST_FILE = resolve(import.meta.dirname, './allowlist.csv');
 
 
 const {
@@ -114,31 +112,43 @@ const host = process.env.HOST || 'localhost'
 
 const server = Fastify()
 
-server.get('/' , (req, res) => {
-  res.header('Content-Type', 'text/html')
-  res.send(htmlTemplate(`
-    <h1>Serveur toctoctoc</h1>
-    <p>Le serveur toctoctoc est disponible</p>
-    <p>Tu peux créer un bouton "login with github/gitlab" où le <code>redirect_uri</code> contient un
-      paramètre <code>destination</code> vers l'un des domaines suivants :
-      <ul>
-        ${[...allowlist].map(hostname => `<li>${hostname}</li>`).join('')}
-      </ul>
-    </p>
-    <p>Pour chiffrer le fichier de config, <a href="/oauth-services-config">c'est par ici</a></p>
-  `))
-})
-
 // @ts-ignore
 const oauth_services_config_html_content = await readFile(resolve(import.meta.dirname, './oauth-services-config.html'), { encoding: 'utf8' })
 // @ts-ignore
 const oauthServicesDecrypt_js_content = await readFile(resolve(import.meta.dirname, './oauthServicesDecrypt.js'), { encoding: 'utf8' })
 
-server.get('/oauth-services-config' , async (req, res) => {
+// @ts-ignore
+async function sendOauthServicesConfigHTMLContent(_req, res){
   res.header('Content-Type', 'text/html')
   res.send(oauth_services_config_html_content)
-})
-server.get('/oauthServicesDecrypt.js' , async (req, res) => {
+}
+
+
+if(githubConfig || gitlabConfigs){
+  server.get('/' , (req, res) => {
+    res.header('Content-Type', 'text/html')
+    res.send(htmlTemplate(`
+      <h1>Serveur toctoctoc</h1>
+      <p>Le serveur toctoctoc est disponible</p>
+      <p>Tu peux créer un bouton "login with github/gitlab" où le <code>redirect_uri</code> contient un
+        paramètre <code>destination</code> vers l'un des domaines suivants :
+        <ul>
+          ${[...allowlist].map(hostname => `<li>${hostname}</li>`).join('')}
+        </ul>
+      </p>
+      <p>Pour chiffrer le fichier de config, <a href="/oauth-services-config">c'est par ici</a></p>
+    `))
+  })
+}
+else{
+  server.get('/', sendOauthServicesConfigHTMLContent)
+}
+
+
+
+server.get('/oauth-services-config', sendOauthServicesConfigHTMLContent)
+
+server.get('/oauthServicesDecrypt.js', async (req, res) => {
   res.header('Content-Type', 'text/javascript')
   res.send(oauthServicesDecrypt_js_content)
 })
