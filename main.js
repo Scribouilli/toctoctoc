@@ -24,6 +24,7 @@ const {
   positionals: [cmd],
   values: { 
     "allowlist-file": allowListFile, 
+    "config-file": configFilepath,
     "encrypted-config-file": encryptedConfigFilepath,
     help
   },
@@ -32,6 +33,7 @@ const {
     help: { type: 'boolean', short: 'h', default: false },
     "allowlist-file": { type: 'string', default: DEFAULT_ALLOW_LIST_FILE },
     "encrypted-config-file": { type: 'string' },
+    "config-file": { type: 'string' },
   },
   allowPositionals: true,
 });
@@ -45,21 +47,33 @@ Options:
     -h, --help                Show this help message
     --allowlist-file          Allow-list file path
     --encrypted-config-file   Encrypted configuration file path
+    --config-file             Configuration file path
 `
 
   console.log(helpText)
   process.exit(0)
 }
 
-
-if(!encryptedConfigFilepath){
-  console.log('Server starting without configuration')
+if(encryptedConfigFilepath && configFilepath){
+  console.error(`Il n'est pas possible d'utiliser simultannément --encrypted-config-file et --config-file. Choisir l'un ou l'autre`)
+  process.exit(1);
 }
+
 
 if(encryptedConfigFilepath && !process.env.OAUTH_SERVICES_DECRYPTION_KEY){
   console.error(`Il manque la variable d'environnement OAUTH_SERVICES_DECRYPTION_KEY pour déchiffrer le fichier de configuration.`)
   process.exit(1);
 }
+
+if(configFilepath && process.env.OAUTH_SERVICES_DECRYPTION_KEY){
+  console.warn(`C'est bizarre d'avoir à la fois un fichier de configuration non-chiffré et la variable d'environnement OAUTH_SERVICES_DECRYPTION_KEY`)
+}
+
+
+if(!encryptedConfigFilepath && !configFilepath){
+  console.info('Server starting without configuration')
+}
+
 
 const allowlist = new Set(
   readFileSync(
@@ -72,40 +86,43 @@ const allowlist = new Set(
 
 console.log('allowlist', allowlist)
 
-
-
-
-/** @type {import('./types.js').GithubOauthServiceConfiguration | undefined} */
-let githubConfig;
-
-/** @type {import('./types.js').GitlabOauthServiceConfiguration[] | undefined} */
-let gitlabConfigs;
-
+/** @type {string} */
+let oauthServicesConfigContent
 
 if(encryptedConfigFilepath){
   const encryptedOauthServicesConfigContent = await readFile(resolve(encryptedConfigFilepath), { encoding: 'utf8' });
-
-  const oauthServicesConfigContent = await decryptOauthServicesContent(
+  
+  oauthServicesConfigContent = await decryptOauthServicesContent(
     encryptedOauthServicesConfigContent, 
     // @ts-ignore
     process.env.OAUTH_SERVICES_DECRYPTION_KEY
   )
 
-  console.log('Oauth services config (after decryption): ', oauthServicesConfigContent)
-
-  /** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
-  const oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
-  // this will throw if the config is not proper JSON. This is intentional
-
-  const {github, gitlab} = oauthServicesConfig;
-  githubConfig = github;
-  gitlabConfigs = gitlab;
-
-  if(!githubConfig && !gitlabConfigs){
-    console.error('Missing github or gitlab configuration')
-    process.exit(1)
-  }
+  console.info('Oauth services config (after decryption): ', oauthServicesConfigContent)
 }
+
+if(configFilepath){
+  oauthServicesConfigContent = await readFile(resolve(configFilepath), { encoding: 'utf8' });
+
+  console.info('Oauth services config: ', oauthServicesConfigContent)
+}
+
+
+/** @type {import('./types.js').ToctoctocOauthServicesConfiguration} */
+// @ts-ignore
+const oauthServicesConfig = JSON.parse(oauthServicesConfigContent)
+// this will throw if the config is not proper JSON. This is intentional
+
+const {github, gitlab} = oauthServicesConfig;
+let githubConfig = github;
+let gitlabConfigs = gitlab;
+
+if(!githubConfig && !gitlabConfigs){
+  console.error('Missing github or gitlab configuration')
+  process.exit(1)
+}
+
+
 
 const port = process.env.PORT || 4000
 const host = process.env.HOST || 'localhost'
