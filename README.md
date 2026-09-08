@@ -73,7 +73,8 @@ npm install
 
 You need to fill the client id and client secret of at least one service.
 
-- `OAUTH_SERVICES_DECRYPTION_KEY`: a key to decrypt `oauth-services.json.encrypted`
+- `OAUTH_SERVICES_DECRYPTION_KEY`: a key to decrypt `OAUTH_SERVICES_CONFIG`
+- `OAUTH_SERVICES_CONFIG`: the path to the encrypted configuration file. By default, it's `./oauth-services.json.encrypted`  
 - `PORT`: The port this server will listen to. By default, it's `4000`.
 - `HOST`: The host this server will listen to. By default, it's `localhost`.
 - `TOCTOCTOC_ORIGIN`: The [web content's origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
@@ -251,4 +252,3 @@ Another important piece of the security puzzle are the various `your-client-appl
 An important note is that the different `your-client-application.com` services are isolated from one another.
 
 For the most part, the boring aspect of the project (accounting data from very small companies), HTTPS and up-to-date dependencies (OS, node.js and package.json dependencies) should probably keep things safe fairly easily.
-

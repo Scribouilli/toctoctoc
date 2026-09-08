@@ -54,11 +54,20 @@ export const makeGitlabRouteHandler = ({origin: gitlabInstanceOrigin, client_id,
       return;
     }
 
-    const parameters = `client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${oauthAppRedirectURI}&code=${code}&grant_type=authorization_code`
-    const urlGitlabOAuth =`${gitlabInstanceOrigin}/oauth/token?${parameters}`
+    const urlGitlabOAuth =`${gitlabInstanceOrigin}/oauth/token`
 
-    got.post(urlGitlabOAuth, { json: true }).then(gitlabResponse => {
-      const response = JSON.parse(gitlabResponse.body)
+    got.post(urlGitlabOAuth, {
+      form: {
+          client_id,
+          client_secret,
+          code,
+          redirect_uri: oauthAppRedirectURI,
+          grant_type: 'authorization_code',
+      },
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).json().then(response => {
       const { access_token, refresh_token, expires_in } = response
 
       if(!access_token){
