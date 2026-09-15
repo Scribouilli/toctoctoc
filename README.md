@@ -119,7 +119,7 @@ variables too.**
 Start the server. It will listen on the chosen port defined in your `.env` file.
 
 ```sh
-npm start
+npm start:dev
 ```
 
 ## How to use your toctoctoc server
