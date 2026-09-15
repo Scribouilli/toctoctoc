@@ -34,7 +34,7 @@ if(!process.env.TOCTOCTOC_ORIGIN){
 
 const toctoctocOrigin = process.env.TOCTOCTOC_ORIGIN
 
-const ENCRYPTED_OAUTH_SERVICES_FILE = './oauth-services.json.encrypted';
+const ENCRYPTED_OAUTH_SERVICES_FILE = process.env.OAUTH_SERVICES_CONFIG || './oauth-services.json.encrypted';
 
 /** @type {import('./types.js').GithubOauthServiceConfiguration | undefined} */
 let githubConfig;

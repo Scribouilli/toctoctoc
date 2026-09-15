@@ -69,11 +69,19 @@ export const makeGithubRouteHandler = ({client_id, client_secret}) => {
       return;
     }
 
-    const urlGithubOAuth =
-    `https://github.com/login/oauth/access_token?code=${code}&client_id=${client_id}&client_secret=${client_secret}`
+    const urlGithubOAuth = `https://github.com/login/oauth/access_token`
 
-    got.post(urlGithubOAuth, { json: true }).then(githubResponse => {
-      const access_token = new URLSearchParams(githubResponse.body).get('access_token')
+    got.post(urlGithubOAuth, {
+      form: {
+        code,
+        client_id,
+        client_secret,
+      },
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).json().then(githubResponse => {
+      const { access_token } = githubResponse
 
       if(!access_token){
         res.status(400)

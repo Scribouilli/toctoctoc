@@ -1,5 +1,4 @@
 node_modules
-
 .env
-
 oauth-services.json
+oauth-services-dev.json.encrypted
